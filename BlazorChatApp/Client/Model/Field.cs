@@ -28,42 +28,42 @@ namespace BlazorChatApp.Client.Model
             { 
                 Name = "A몰",
                 PosX = 175,PosY=128,
-                Link="http://webapp.alpha.showa.kr/search-result/AGROUPBEST"
+                Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "B몰",
                 PosX = 125,PosY=278,
-                Link="http://webapp.alpha.showa.kr/search-result/BGROUPBEST"
+                Link="BGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "C몰",
                 PosX = 75,PosY=378,
-                Link="http://webapp.alpha.showa.kr/search-result/CGROUPBEST"
+                Link="CGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "D몰",
                 PosX = 150,PosY=378,
-                Link="http://webapp.alpha.showa.kr/search-result/DGROUPBEST"
+                Link="DGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "E몰",
                 PosX = 330,PosY=378,
-                Link="http://webapp.alpha.showa.kr/search-result/EGROUPBEST"
+                Link="EGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "F몰",
                 PosX = 330,PosY=478,
-                Link="http://webapp.alpha.showa.kr/search-result/FGROUPBEST"
+                Link="FGROUPBEST"
             });
 
         }
