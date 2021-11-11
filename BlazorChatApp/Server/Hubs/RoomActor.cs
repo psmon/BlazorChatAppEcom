@@ -57,15 +57,20 @@ namespace BlazorChatApp.Server.Hubs
                     Color=RandomColor
                 };
 
+                double posx = 552;
+                double posy = 296;
+
                 UpdateUserPos updateUserPos= new UpdateUserPos()
                 { 
                     Id=cmd.UserInfo.Id,
                     Name=$"User-{userAutoNo}",
-                    PosX=random.NextDouble()*300+20,PosY=random.NextDouble()*300+20,
+                    PosX=posx,PosY=posy,
+                    AbsPosX=posx,AbsPosY=posy,
                     ConnectionId = cmd.ConnectionId
                 };
 
-                users[cmd.UserInfo.Id] = updateUserPos;
+                if(!users.ContainsKey(updateUserPos.Id))
+                    users[cmd.UserInfo.Id] = updateUserPos;
 
                 await OnJoinRoom(cmd.RoomInfo, userInfo, updateUserPos);
             });
@@ -116,6 +121,8 @@ namespace BlazorChatApp.Server.Hubs
                 {
                     users[cmd.Id].PosX=AbsPosX;
                     users[cmd.Id].PosY=AbsPosY;
+                    users[cmd.Id].AbsPosX=AbsPosX;
+                    users[cmd.Id].AbsPosY=AbsPosY;
                 }
 
                 log.Info($"UpdateUser : X=>{AbsPosX} Y=>{AbsPosY}");

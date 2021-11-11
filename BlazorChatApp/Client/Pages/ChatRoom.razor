@@ -1,23 +1,26 @@
 ﻿@page "/chatroom"
+@using System.Drawing
 @using Blazor.Extensions; 
 @using Blazor.Extensions.Canvas
 @using Blazor.Extensions.Canvas.Canvas2D;
+@using BlazorChatApp.Client.Core
 @using Microsoft.AspNetCore.SignalR.Client
 @using BlazorChatApp.Shared;
 @using BlazorChatApp.Client.Model;
+@using Microsoft.JSInterop
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime;
 
 <p>MyName: @Name , RoomName : @RoomName , 채팅창에 방향키누르면 움직입니다. </p>
 
-<input type="text" @onkeydown="KeyboardEventHandler " @onkeypress=" KeyboardEventHandler "  @bind="ChatMessageText" />
+<input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
 <h6>@KeyPressed </h6>
 <h6>@EventInfo</h6>
 
 
-<div id="canvasHolder" style="position: fixed; width: 80%; height: 80%" >
-    <img @ref="spritesheet" hidden id="spritesheet" src="/img/map1.png" />
-    <BECanvas Width="600" Height="400" @ref="CanvasRef"></BECanvas>
+<div id="canvasContainer" style="position: fixed; width: 100%; height: 100%" >
+    <img @ref="_spritesheet" hidden id="spritesheet" src="/img/map1.png" />
+    <BECanvas Width=1024 Height=800  @ref="_canvas"></BECanvas>
 </div>
 
 @code {
@@ -29,11 +32,10 @@
 
     private Field BallField = new Field();
 
-    private Canvas2DContext ctx;
+    BECanvasComponent _canvas;
+    ElementReference _spritesheet;
 
-    protected BECanvasComponent CanvasRef;
-
-    ElementReference spritesheet;
+    Canvas2DContext _context;
 
     private string LoginId { get; set; }
 
@@ -54,12 +56,12 @@
             if(user.Id == LoginId)
             {
                 Name = user.Name;
-                RoomName = room.Name;
+                RoomName = room.Name;                
                 StateHasChanged();
             }
             else
             {
-                BallField.AddUser(user.Id,user.Name, pos.PosX, pos.PosY);
+                BallField.AddUser(user.Id,user.Name, pos.AbsPosX, pos.AbsPosY);
             }
         });
 
@@ -70,7 +72,7 @@
             {
                 foreach(var pos in updateUserPos)
                 {
-                    BallField.AddUser(pos.Id, pos.Name, pos.PosX, pos.PosY);
+                    BallField.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY);                        
                 }
             }
         });
@@ -91,8 +93,8 @@
             {
                 var linkinfo = BallField.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
                 if (linkinfo != null)
-                {
-                    //var resulut = JSRuntime.InvokeAsync<string>("open", linkinfo.Link.ToString(), "_blank").Result;                    
+                {                    
+                    //_jsRuntime.InvokeVoidAsync("window.open", linkinfo.Link).GetAwaiter().GetResult();
                 }
             }
             BallField.UpdateUserPos(userPos);
@@ -126,58 +128,66 @@
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        this.ctx = await CanvasRef.CreateCanvas2DAsync();
-        await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));
-        await base.OnInitializedAsync();
+        if (!firstRender)
+            return;
+        
+        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));
+        _context = await _canvas.CreateCanvas2DAsync(); 
     }
 
     //[JSInvokable]
     //public void ResizeInBlazor(double width, double height) => BallField.Resize(width, height);
 
     [JSInvokable]
-    public async ValueTask RenderInBlazor(float timeStamp)
+    public async ValueTask GameLoop(float timeStamp, int width, int height)
     {
         double fps = 1.0 / (DateTime.Now - LastRender).TotalSeconds;
         LastRender = DateTime.Now;
 
         BallField.StepForward();
 
-        await this.ctx.BeginBatchAsync();
-        await this.ctx.ClearRectAsync(0, 0, BallField.Width, BallField.Height);
-        await this.ctx.SetFillStyleAsync("#003366");
-        await this.ctx.FillRectAsync(0, 0, BallField.Width, BallField.Height);
-        await this.ctx.DrawImageAsync(spritesheet, 0, 0,BallField.Width,BallField.Height);
+        await _context.BeginBatchAsync();
+        await _context.ClearRectAsync(0, 0, BallField.Width, BallField.Height);
+        await _context.SetFillStyleAsync("#003366");
+        await _context.FillRectAsync(0, 0, BallField.Width, BallField.Height);
+        await _context.DrawImageAsync(_spritesheet, 0, 0,BallField.Width,BallField.Height);
 
-        await this.ctx.SetFontAsync("26px Segoe UI");
-        await this.ctx.SetFillStyleAsync("#FFFFFF");
+        await _context.SetFontAsync("26px Segoe UI");
+        await _context.SetFillStyleAsync("#FFFFFF");
 
 
-        await this.ctx.FillTextAsync("Blazor WebAssembly + HTML Canvas", 10, 30);
-        await this.ctx.SetFontAsync("16px consolas");
-        await this.ctx.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
-        await this.ctx.SetStrokeStyleAsync("#FFFFFF");
+        await _context.FillTextAsync("Blazor WebAssembly + HTML Canvas", 10, 30);
+        await _context.SetFontAsync("16px consolas");
+        await _context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
+        await _context.SetStrokeStyleAsync("#FFFFFF");
 
-        await this.ctx.SetFontAsync("12px 바탕체");
-        await this.ctx.SetStrokeStyleAsync("#FFFFFF");
+        await _context.SetFontAsync("12px 바탕체");
+        await _context.SetStrokeStyleAsync("#DF0101");
 
+        foreach(var store in BallField.storeLinks)
+        {
+            await _context.FillTextAsync($"{store.Name}-{store.PosX},{store.PosY}", store.PosX, store.PosY);
+        }
+
+        await _context.SetStrokeStyleAsync("#FFFFFF");
         foreach (var ball in BallField.Balls)
         {
             if (!string.IsNullOrEmpty(ball.ChatMessage))
             {
-                await this.ctx.FillTextAsync($"{ball.Name} - {ball.ChatMessage}", ball.X -10, ball.Y -20);
+                await _context.FillTextAsync($"{ball.Name} - {ball.ChatMessage}", ball.X -10, ball.Y -20);
             }
             else
             {
-                await this.ctx.FillTextAsync($"{ball.Name}", ball.X -10, ball.Y -20);
+                await _context.FillTextAsync($"{ball.Name} - {(int)ball.X},{(int)ball.Y}", ball.X -10, ball.Y -20);
             }
 
-            await this.ctx.BeginPathAsync();
-            await this.ctx.ArcAsync(ball.X, ball.Y, ball.Radius, 0, 2 * Math.PI, false);
-            await this.ctx.SetFillStyleAsync(ball.Color);
-            await this.ctx.FillAsync();
-            await this.ctx.StrokeAsync();
+            await _context.BeginPathAsync();
+            await _context.ArcAsync(ball.X, ball.Y, ball.Radius, 0, 2 * Math.PI, false);
+            await _context.SetFillStyleAsync(ball.Color);
+            await _context.FillAsync();
+            await _context.StrokeAsync();
         }
-        await this.ctx.EndBatchAsync();
+        await _context.EndBatchAsync();
     }
 
     private int increaseDelta = 50;
@@ -186,6 +196,42 @@
     string EventInfo = "";
 
     private string ChatMessageText;
+
+    private async Task KeyboardChatEventHandler(KeyboardEventArgs args)
+    {
+        KeyPressed = "Key Pressed is " + args.Key;
+        //EventInfo = "Event Type " + args.Type;
+
+        switch (args.Key)
+        {
+            case "Enter":
+            if (!string.IsNullOrWhiteSpace(ChatMessageText))
+            {   
+                EventInfo = ChatMessageText;
+                await SendChatMessage(ChatMessageText);
+            }
+            break;
+        }
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseMove(int mouseX, int mouseY)
+    {
+        InputSystem.Instance.MouseCoords.X = mouseX;
+        InputSystem.Instance.MouseCoords.Y = mouseY;
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseDown(MouseButtons button)
+    {
+        InputSystem.Instance.SetButtonState(button, ButtonStates.Down);
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseUp(MouseButtons button)
+    {
+        InputSystem.Instance.SetButtonState(button, ButtonStates.Up);
+    }
 
     private async Task KeyboardEventHandler(KeyboardEventArgs args)
     {

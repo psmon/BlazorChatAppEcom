@@ -9,6 +9,7 @@ namespace BlazorChatApp.Client.Model
 {
     public class StoreLink
     {
+        public string Name{get;set; }
         public string Link{get;set; }
         public double PosX{get;set; }
         public double PosY{get;set; }
@@ -25,37 +26,43 @@ namespace BlazorChatApp.Client.Model
         {
             storeLinks.Add(new StoreLink()
             { 
+                Name = "A몰",
                 PosX = 175,PosY=128,
                 Link="http://webapp.alpha.showa.kr/search-result/AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
+                Name = "B몰",
                 PosX = 125,PosY=278,
                 Link="http://webapp.alpha.showa.kr/search-result/BGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
+                Name = "C몰",
                 PosX = 75,PosY=378,
                 Link="http://webapp.alpha.showa.kr/search-result/CGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                PosX = 225,PosY=378,
+                Name = "D몰",
+                PosX = 150,PosY=378,
                 Link="http://webapp.alpha.showa.kr/search-result/DGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                PosX = 425,PosY=378,
+                Name = "E몰",
+                PosX = 330,PosY=378,
                 Link="http://webapp.alpha.showa.kr/search-result/EGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                PosX = 525,PosY=-121,
+                Name = "F몰",
+                PosX = 330,PosY=478,
                 Link="http://webapp.alpha.showa.kr/search-result/FGROUPBEST"
             });
 
