@@ -36,9 +36,9 @@
             }
             lastFrameTime = timeStamp;
 
-            window.requestAnimationFrame(gameLoop);
             game.instance.invokeMethodAsync('GameLoop', timeStamp, game.canvas.width, game.canvas.height);
 
+            window.requestAnimationFrame(gameLoop);
         }
 
         function onResize() {

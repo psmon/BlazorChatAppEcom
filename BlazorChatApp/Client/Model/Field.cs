@@ -74,7 +74,7 @@ namespace BlazorChatApp.Client.Model
             foreach(var storeLink in storeLinks)
             {
                 var distance = Math.Sqrt((Math.Pow(storeLink.PosX - x, 2) + Math.Pow(storeLink.PosY - y, 2)));
-                if (distance < 50)
+                if (distance < 30)
                 {
                     Console.WriteLine($"Link===>{storeLink.Link} Dist{distance}");
                     return storeLink;
