@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 using BlazorChatApp.Shared;
 
@@ -27,14 +26,14 @@ namespace BlazorChatApp.Client.Model
             storeLinks.Add(new StoreLink()
             { 
                 Name = "A몰",
-                PosX = 175,PosY=128,
+                PosX = 145,PosY=128,
                 Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "B몰",
-                PosX = 125,PosY=278,
+                PosX = 105,PosY=258,
                 Link="BGROUPBEST"
             });
 
@@ -70,11 +69,12 @@ namespace BlazorChatApp.Client.Model
 
         public StoreLink CollisionCheck(double x, double y)
         {
+            int inDistance = 30;
             Console.WriteLine($"x==>{x} y==>{y}");
             foreach(var storeLink in storeLinks)
             {
                 var distance = Math.Sqrt((Math.Pow(storeLink.PosX - x, 2) + Math.Pow(storeLink.PosY - y, 2)));
-                if (distance < 30)
+                if (distance < inDistance)
                 {
                     Console.WriteLine($"Link===>{storeLink.Link} Dist{distance}");
                     return storeLink;
@@ -87,9 +87,15 @@ namespace BlazorChatApp.Client.Model
             (Width, Height) = (width, height);
 
         public void StepForward()
-        {
+        {            
             foreach (Ball ball in Balls)
                 ball.StepForward();
+        }
+
+        public void SyncPos()
+        {            
+            foreach (Ball ball in Balls)
+                ball.SyncPos();
         }
 
         private double RandomVelocity(Random rand, double min, double max)
@@ -106,7 +112,7 @@ namespace BlazorChatApp.Client.Model
 
         public void AddUser(string id, string name, double posx,double posy)
         {
-            double minSpeed = 1.2;
+            double minSpeed = 1.5;
             double maxSpeed = .5;
             double radius = 10;
             Random rand = new Random();

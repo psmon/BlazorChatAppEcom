@@ -14,6 +14,7 @@ namespace BlazorChatApp.Client
 {
     public class ChatLand
     {
+        ulong frameCnt = 0;
         public Dictionary<string,ElementReference> resource {get;set; }
         public Field BallField { get;set; }
         public BECanvasComponent _canvas { get;set; }        
@@ -25,10 +26,24 @@ namespace BlazorChatApp.Client
 
         public async ValueTask GameLoop(float timeStamp, int width, int height)
         {
+            frameCnt++;
+
+            if(frameCnt > int.MaxValue )
+            {
+                frameCnt = 0;
+            }
+
+            if(frameCnt%(60*5)==0)
+            {
+                BallField.SyncPos();
+            }
+            else
+            {
+                BallField.StepForward();
+            }
+
             double fps = 1.0 / (DateTime.Now - LastRender).TotalSeconds;
             LastRender = DateTime.Now;
-
-            BallField.StepForward();
 
             await _context.BeginBatchAsync();
             await _context.ClearRectAsync(0, 0, BallField.Width, BallField.Height);
@@ -54,7 +69,7 @@ namespace BlazorChatApp.Client
                 await _context.FillTextAsync($"{store.Name}-{store.PosX},{store.PosY}", store.PosX, store.PosY);
             }
 
-            await _context.SetFillStyleAsync("Blue");
+            await _context.SetFillStyleAsync("White");
             await _context.SetStrokeStyleAsync("#FFFFFF");
             foreach (var ball in BallField.Balls)
             {

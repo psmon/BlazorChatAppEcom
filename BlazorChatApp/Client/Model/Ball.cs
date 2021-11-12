@@ -44,6 +44,12 @@ namespace BlazorChatApp.Client.Model
             ChatMessage = chatMessage.Message;
             ChatViewTime = 1000;
         }
+
+        public void SyncPos()
+        {
+            X=TargetX;
+            Y=TargetY;
+        }
         
         public void StepForward()
         {
@@ -64,6 +70,7 @@ namespace BlazorChatApp.Client.Model
             {
                 Y-=YVel;
             }
+  
 
             if(!string.IsNullOrEmpty(ChatMessage))
             {

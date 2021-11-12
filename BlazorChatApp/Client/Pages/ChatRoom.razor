@@ -196,9 +196,9 @@
         if (!firstRender)
             return;
         
-        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));
         _context = await _canvas.CreateCanvas2DAsync();
-
+        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));        
+        await base.OnInitializedAsync();
 
         Dictionary<string,ElementReference> resource = new Dictionary<string, ElementReference>();
 
@@ -246,25 +246,6 @@
             }
             break;
         }
-    }
-
-    [JSInvokable]
-    public async ValueTask OnMouseMove(int mouseX, int mouseY)
-    {
-        InputSystem.Instance.MouseCoords.X = mouseX;
-        InputSystem.Instance.MouseCoords.Y = mouseY;
-    }
-
-    [JSInvokable]
-    public async ValueTask OnMouseDown(MouseButtons button)
-    {
-        InputSystem.Instance.SetButtonState(button, ButtonStates.Down);
-    }
-
-    [JSInvokable]
-    public async ValueTask OnMouseUp(MouseButtons button)
-    {
-        InputSystem.Instance.SetButtonState(button, ButtonStates.Up);
     }
 
     private async Task KeyboardEventHandler(KeyboardEventArgs args)
@@ -387,6 +368,5 @@
         open = !open;
         this.anchor = anchor;
     }
-
 
 }
