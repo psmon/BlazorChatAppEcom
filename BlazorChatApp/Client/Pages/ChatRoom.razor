@@ -9,6 +9,7 @@
 @using BlazorChatApp.Client.ChatLand;
 @using Microsoft.JSInterop
 @using ServiceModel.Models.Search
+@using System.Drawing
 @inject HttpClient Http
 
 @implements IAsyncDisposable
@@ -119,7 +120,7 @@
                 }
                 else
                 {
-                    if(open) open = false;
+                    
                 }
             }
             _chatLand.UpdateUserPos(userPos);
@@ -173,13 +174,20 @@
         
     }
 
-    //[JSInvokable]
-    //public void ResizeInBlazor(double width, double height) => BallField.Resize(width, height);
+    [JSInvokable]
+    public void ResizeInBlazor(int screenWidth, int screenHeight)
+    {
+        if (null == _chatLand) return;
+
+        _chatLand.Display.Size = new Size(screenWidth, screenHeight);
+    }
 
     [JSInvokable]
     public async ValueTask RenderInBlazor(float timeStamp)
     {
-        await _chatLand.GameLoop(timeStamp,800,600);
+        if (null == _chatLand) return;
+
+        await _chatLand.Step(timeStamp);
     }
 
     private int increaseDelta = 50;
@@ -301,15 +309,5 @@
             await hubConnection.DisposeAsync();
         }
     }
-
-
-    
-    public string Text { get; set; }
-
-    bool open = false;
-
-    bool isShowaFilter = true;
-
-
 
 }
