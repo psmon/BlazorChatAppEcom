@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 using BlazorChatApp.Shared;
 
-namespace BlazorChatApp.Client.Model
+namespace BlazorChatApp.Client.ChatLand
 {
     public class Ball
     {

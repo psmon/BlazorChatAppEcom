@@ -6,7 +6,7 @@
 
 @using Microsoft.AspNetCore.SignalR.Client
 @using BlazorChatApp.Shared;
-@using BlazorChatApp.Client.Model;
+@using BlazorChatApp.Client.ChatLand;
 @using Microsoft.JSInterop
 @using ServiceModel.Models.Search
 @inject HttpClient Http
@@ -33,14 +33,12 @@
     private string Name{ get; set; }
     private string RoomName{ get; set; }
     public HubConnection hubConnection { get; set; }
-    private Field BallField = new Field();
+    
     BECanvasComponent _canvas;
     ElementReference _spritesheet;
     ElementReference _img_char1;    
-
-    Canvas2DContext _context;
-    private string LoginId { get; set; }
-    private DateTime LastRender;
+    
+    private string LoginId { get; set; }    
 
     private ChatLand _chatLand;
     //Product
@@ -78,7 +76,7 @@
             }
             else
             {
-                BallField.AddUser(user.Id,user.Name, pos.AbsPosX, pos.AbsPosY);
+                _chatLand.AddUser(user.Id,user.Name, pos.AbsPosX, pos.AbsPosY);
             }
         });
 
@@ -89,7 +87,7 @@
             {
                 foreach(var pos in updateUserPos)
                 {
-                    BallField.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY);                        
+                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY);                        
                 }
             }
         });
@@ -98,7 +96,7 @@
         hubConnection.On<ChatMessage>("OnChatMessage", (chatMessage) =>
         {
             Console.WriteLine($"WS - OnChatMessage");
-            BallField.ChatMessage(chatMessage);
+            _chatLand.ChatMessage(chatMessage);
         });
 
 
@@ -108,7 +106,7 @@
             //ME
             if(userPos.Id == LoginId)
             {
-                var linkinfo = BallField.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
+                var linkinfo = _chatLand.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
                 if (linkinfo != null)
                 {
                     TimeSpan offset = DateTime.Now - lastPopupTime;
@@ -124,13 +122,13 @@
                     if(open) open = false;
                 }
             }
-            BallField.UpdateUserPos(userPos);
+            _chatLand.UpdateUserPos(userPos);
         });
 
         hubConnection.On<LeaveRoom>("OnLeaveRoom", (room) =>
         {
             Console.WriteLine($"WS - OnLeaveRoom");
-            BallField.RemoveUser(room.UserInfo.Id);
+            _chatLand.RemoveUser(room.UserInfo.Id);
         });
 
         await hubConnection.StartAsync();
@@ -161,7 +159,8 @@
         if (!firstRender)
             return;
         
-        _context = await _canvas.CreateCanvas2DAsync();
+        //_context = await _canvas.CreateCanvas2DAsync();
+
         await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));        
         await base.OnInitializedAsync();
 
@@ -170,14 +169,8 @@
         resource["img-char1"]= _img_char1;
         resource["img-back"]= _spritesheet;
 
-        _chatLand = new ChatLand()
-        {
-            _context = _context,
-            BallField = BallField,
-            resource = resource,
-            LastRender = LastRender              
-        };
-
+        _chatLand =  await ChatLand.Create(_canvas, resource);
+        
     }
 
     //[JSInvokable]

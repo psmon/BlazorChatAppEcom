@@ -4,7 +4,7 @@ using System.Linq;
 
 using BlazorChatApp.Shared;
 
-namespace BlazorChatApp.Client.Model
+namespace BlazorChatApp.Client.ChatLand
 {
     public class StoreLink
     {

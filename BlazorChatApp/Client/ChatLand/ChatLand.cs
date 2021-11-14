@@ -6,22 +6,34 @@ using System.Threading.Tasks;
 using Blazor.Extensions;
 using Blazor.Extensions.Canvas.Canvas2D;
 
-using BlazorChatApp.Client.Model;
+using BlazorChatApp.Client.ChatLand;
+using BlazorChatApp.Shared;
 
 using Microsoft.AspNetCore.Components;
 
-namespace BlazorChatApp.Client
+namespace BlazorChatApp.Client.ChatLand
 {
     public class ChatLand
     {
         ulong frameCnt = 0;
-        public Dictionary<string,ElementReference> resource {get;set; }
-        public Field BallField { get;set; }
-        public BECanvasComponent _canvas { get;set; }        
-        public Canvas2DContext _context { get;set; }
+        private Dictionary<string,ElementReference> resource {get;set; }
+        private Field BallField { get;set; }           
+        private Canvas2DContext _context { get;set; }
         public DateTime LastRender { get;set; }
         public ChatLand()
         {
+            LastRender = DateTime.Now;
+        }
+
+        public static async ValueTask<ChatLand> Create(BECanvasComponent canvas, Dictionary<string,ElementReference> resource )
+        {  
+            var game = new ChatLand 
+            {   
+                _context = await canvas.CreateCanvas2DAsync(),
+                BallField= new Field(),
+                resource = resource
+            };
+            return game;
         }
 
         public async ValueTask GameLoop(float timeStamp, int width, int height)
@@ -92,5 +104,33 @@ namespace BlazorChatApp.Client
             }
             await _context.EndBatchAsync();
         }
+
+
+
+        public void AddUser(string id, string name, double posx,double posy)
+        {
+            BallField.AddUser(id, name, posx, posy);
+        }
+
+        public void RemoveUser(string id)
+        {            
+            BallField.RemoveUser(id);
+        }
+
+        public void UpdateUserPos(UpdateUserPos updateUserPos)
+        {
+            BallField.UpdateUserPos(updateUserPos);            
+        }
+
+        public void ChatMessage(ChatMessage chatMessage)
+        {
+            BallField.ChatMessage(chatMessage);
+        }
+
+        public StoreLink CollisionCheck(double x, double y)
+        {
+            return BallField.CollisionCheck(x, y);
+        }
+
     }
 }
