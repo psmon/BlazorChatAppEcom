@@ -45,14 +45,7 @@
     //Product
     string TextValue { get; set; }    
     private SearchResult searchResult;
-    //Filter Values
-    string SearchText {  get;  set; }
-    string mallId;
-    string categoryId;
-    string categoryId2;    
-    string filterText;
-    string orderText;
-    
+
     bool mandatory = true;
     
     DateTime lastPopupTime = DateTime.Now;
@@ -162,7 +155,7 @@
         
         //_context = await _canvas.CreateCanvas2DAsync();
 
-        await JsRuntime.InvokeAsync<object>("initRenderJS", DotNetObjectReference.Create(this));        
+        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));        
         await base.OnInitializedAsync();
 
         Dictionary<string,ElementReference> resource = new Dictionary<string, ElementReference>();
@@ -171,11 +164,15 @@
         resource["img-back"]= _spritesheet;
 
         _chatLand =  await ChatLand.Create(_canvas, resource);
+
+
+        // this will make sure that the viewport is correctly initialized
+        await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));  
         
     }
 
     [JSInvokable]
-    public void ResizeInBlazor(int screenWidth, int screenHeight)
+    public void OnResize(int screenWidth, int screenHeight)
     {
         if (null == _chatLand) return;
 
@@ -183,7 +180,7 @@
     }
 
     [JSInvokable]
-    public async ValueTask RenderInBlazor(float timeStamp)
+    public async ValueTask GameLoop(float timeStamp)
     {
         if (null == _chatLand) return;
 
@@ -222,16 +219,16 @@
         switch (args.Key)
         {
             case "ArrowUp":
-            KeyUp();
+            await KeyUp();
             break;
             case "ArrowDown":
-            KeyDown();
+            await KeyDown();
             break;
             case "ArrowLeft":
-            KeyLeft();
+            await KeyLeft();
             break;
             case "ArrowRight":
-            KeyRight();
+            await KeyRight();
             break;
             case "Enter":
             if (!string.IsNullOrWhiteSpace(ChatMessageText))

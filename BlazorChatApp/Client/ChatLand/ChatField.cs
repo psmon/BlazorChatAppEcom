@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Blazor.Extensions.Canvas.Canvas2D;
 
 using BlazorChatApp.Client.Core;
+using BlazorChatApp.Client.Core.Components;
 using BlazorChatApp.Shared;
 
 using Microsoft.AspNetCore.Components;
@@ -20,9 +21,8 @@ namespace BlazorChatApp.Client.ChatLand
         public double PosY{get;set; }
     }
 
-    public class Field
+    public class ChatField : BaseComponent
     {
-        private Canvas2DContext _context;
 
         public DateTime LastRender { get;set; }
 
@@ -33,9 +33,8 @@ namespace BlazorChatApp.Client.ChatLand
         public double Width { get; private set; } = 800;
         public double Height { get; private set; } = 600;
 
-        public Field(Canvas2DContext canvas2DContext)
+        public ChatField(GameObject owner) : base(owner)
         {
-            _context = canvas2DContext;
             
             storeLinks.Add(new StoreLink()
             { 
@@ -172,55 +171,53 @@ namespace BlazorChatApp.Client.ChatLand
             }
         }
 
-        public async ValueTask Update()
+        public async override ValueTask Update(GameContext game)
         {
             await StepForward();
         }
 
-        public async ValueTask Render()
+        public async ValueTask Render(Canvas2DContext context)
         {            
             double fps = 1.0 / (DateTime.Now - LastRender).TotalSeconds;
             LastRender = DateTime.Now;
 
-            await _context.BeginBatchAsync();
-            await _context.ClearRectAsync(0, 0, Width, Height);
-            await _context.SetFillStyleAsync("#003366");
-            await _context.FillRectAsync(0, 0, Width, Height);
-            await _context.DrawImageAsync(resource["img-back"], 0, 0, Width, Height);
+            await context.SetFillStyleAsync("#003366");
+            await context.FillRectAsync(0, 0, Width, Height);
+            await context.DrawImageAsync(resource["img-back"], 0, 0, Width, Height);
 
-            await _context.SetFontAsync("26px Segoe UI");
-            await _context.SetFillStyleAsync("#FFFFFF");
+            await context.SetFontAsync("26px Segoe UI");
+            await context.SetFillStyleAsync("#FFFFFF");
 
 
-            await _context.FillTextAsync("Blazor WebAssembly + HTML Canvas", 10, 30);
-            await _context.SetFontAsync("16px consolas");
-            await _context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
-            await _context.SetStrokeStyleAsync("#FFFFFF");
+            await context.FillTextAsync("Blazor WebAssembly + HTML Canvas", 10, 30);
+            await context.SetFontAsync("16px consolas");
+            await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
+            await context.SetStrokeStyleAsync("#FFFFFF");
 
-            await _context.SetFontAsync("12px 바탕체");
-            await _context.SetFillStyleAsync("Red");
-            await _context.SetStrokeStyleAsync("#DF0101");
+            await context.SetFontAsync("12px 바탕체");
+            await context.SetFillStyleAsync("Red");
+            await context.SetStrokeStyleAsync("#DF0101");
 
             foreach(var store in storeLinks)
             {
-                await _context.FillTextAsync($"{store.Name}-{store.PosX},{store.PosY}", store.PosX, store.PosY);
+                await context.FillTextAsync($"{store.Name}-{store.PosX},{store.PosY}", store.PosX, store.PosY);
             }
 
-            await _context.SetFillStyleAsync("White");
-            await _context.SetStrokeStyleAsync("#FFFFFF");
+            await context.SetFillStyleAsync("White");
+            await context.SetStrokeStyleAsync("#FFFFFF");
             foreach (var ball in Balls)
             {
                 if (!string.IsNullOrEmpty(ball.ChatMessage))
                 {
-                    await _context.FillTextAsync($"{ball.Name} - {ball.ChatMessage}", ball.X -10, ball.Y -10);
+                    await context.FillTextAsync($"{ball.Name} - {ball.ChatMessage}", ball.X -10, ball.Y -10);
                 }
                 else
                 {
-                    await _context.FillTextAsync($"{ball.Name} - {(int)ball.X},{(int)ball.Y}", ball.X -10, ball.Y -10);
+                    await context.FillTextAsync($"{ball.Name} - {(int)ball.X},{(int)ball.Y}", ball.X -10, ball.Y -10);
                 }
-                await _context.DrawImageAsync(resource["img-char1"], ball.X,ball.Y,80,80);                
+                await context.DrawImageAsync(resource["img-char1"], ball.X,ball.Y,80,80);                
             }
-            await _context.EndBatchAsync();
+            
         }
     }
 }

@@ -27,35 +27,47 @@
         const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
         var lastFrameTime = 0;  // the last frame time
 
-        function renderJS(timeStamp) {
-            if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early
-                //theInstance.invokeMethodAsync('RenderInBlazor', timeStamp);
-                window.requestAnimationFrame(renderJS);
+
+        function gameLoop(timeStamp) {
+
+            if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early                
+                window.requestAnimationFrame(gameLoop);
                 return; // return as there is nothing to do
             }
             lastFrameTime = timeStamp; // remember the time of the rendered frame
 
-            // render the frame
-            theInstance.invokeMethodAsync('RenderInBlazor', timeStamp);
-            window.requestAnimationFrame(renderJS);
+            // render the frame            
+            window.requestAnimationFrame(gameLoop);
+            game.instance.invokeMethodAsync('GameLoop', timeStamp);
         }
 
-        function resizeCanvasToFitWindow() {
-            var holder = document.getElementById('canvasHolder');
-            var canvas = holder.querySelector('canvas');
-            if (canvas) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-                theInstance.invokeMethodAsync('ResizeInBlazor', canvas.width, canvas.height);
-            }
+        function onResize() {
+            if (!window.game.canvas)
+                return;
+
+            game.canvas.width = window.innerWidth;
+            game.canvas.height = window.innerHeight;
+
+            game.instance.invokeMethodAsync('OnResize', game.canvas.width, game.canvas.height);
         }
 
-        window.initRenderJS = (instance) => {
-            window.theInstance = instance;
-            //window.addEventListener("resize", resizeCanvasToFitWindow);
-            //resizeCanvasToFitWindow();
-            window.requestAnimationFrame(renderJS);
+        window.gameWindowResize = (instance) => {
+            onResize();
         };
+
+        window.initGame = (instance) => {
+            var canvasContainer = document.getElementById('canvasContainer'),
+                canvases = canvasContainer.getElementsByTagName('canvas') || [];
+            window.game = {
+                instance: instance,
+                canvas: canvases.length ? canvases[0] : null
+            };
+
+            window.addEventListener("resize", onResize);
+
+            window.requestAnimationFrame(gameLoop);
+        };
+
     </script>
 
 </body>
