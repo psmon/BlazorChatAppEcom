@@ -1,61 +1,17 @@
 ﻿@inherits LayoutComponentBase
 
-<PageTitle>Webnori</PageTitle>
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
 
-<MudLayout>
-    <MudAppBar Color="Color.Primary" Elevation="1" Dense="true">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@ToggleDrawer" />
-        <MudSpacer />        
-    </MudAppBar>
-
-
-    <MudDrawer @bind-Open="@open" Elevation="1">
-        <MudDrawerHeader>
-            <MudText Typo="Typo.h6">웹툴즈</MudText>
-        </MudDrawerHeader>
-        <div class="sidebar">
-            <NavMenu />
+    <div class="main">
+        <div class="top-row px-4">
+            <a href="http://blazor.net" target="_blank" class="ml-md-auto">About</a>
         </div>
-    </MudDrawer>
-    <MudMainContent Class="pt-1 px-1">
-        <MudContainer Class="mt-1">
-            <div class="page">
-                <main>
-                    <article class="content px-1">
-                        @Body
-                    </article>
-                </main>
-            </div>
-        </MudContainer>
-    </MudMainContent>
-</MudLayout>
 
-
-<MudThemeProvider Theme="MyCustomTheme" />
-
-@code{
-
-    bool open = false;
-
-    void ToggleDrawer()
-    {
-        open = !open;
-    }
-
-    MudTheme MyCustomTheme = new MudTheme()
-    {
-        Palette = new Palette()
-        {
-            Primary = Colors.Blue.Default,
-            Secondary = Colors.Green.Accent4,
-            AppbarBackground = Colors.Red.Default,
-        },
-
-        LayoutProperties = new LayoutProperties()
-        {
-            DrawerWidthLeft = "250px",
-            DrawerWidthRight = "500px"
-        }
-    };
-}
-
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>

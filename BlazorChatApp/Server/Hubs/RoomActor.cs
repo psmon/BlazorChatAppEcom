@@ -125,7 +125,7 @@ namespace BlazorChatApp.Server.Hubs
                     users[cmd.Id].AbsPosY=AbsPosY;
                 }
 
-                log.Info($"UpdateUser : X=>{AbsPosX} Y=>{AbsPosY}");
+                log.Info($"UpdateUser : X=>{users[cmd.Id].AbsPosX} Y=>{users[cmd.Id].AbsPosY}");
 
                 UpdateUserPos updateUserPos = new UpdateUserPos()
                 {

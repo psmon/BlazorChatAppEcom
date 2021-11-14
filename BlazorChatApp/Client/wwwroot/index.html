@@ -9,9 +9,6 @@
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="BlazorChatApp.Client.styles.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" rel="stylesheet" />
-    <link href="_content/MudBlazor/MudBlazor.min.css" rel="stylesheet" />
-    <script src="_content/MudBlazor/MudBlazor.min.js"></script>
 </head>
 
 <body>
@@ -30,37 +27,34 @@
         const FRAME_MIN_TIME = (1000 / 60) * (60 / FRAMES_PER_SECOND) - (1000 / 60) * 0.5;
         var lastFrameTime = 0;  // the last frame time
 
-        function gameLoop(timeStamp) {
+        function renderJS(timeStamp) {
             if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early
+                //theInstance.invokeMethodAsync('RenderInBlazor', timeStamp);
+                window.requestAnimationFrame(renderJS);
                 return; // return as there is nothing to do
             }
-            lastFrameTime = timeStamp;
+            lastFrameTime = timeStamp; // remember the time of the rendered frame
 
-            game.instance.invokeMethodAsync('GameLoop', timeStamp, game.canvas.width, game.canvas.height);
-
-            window.requestAnimationFrame(gameLoop);
+            // render the frame
+            theInstance.invokeMethodAsync('RenderInBlazor', timeStamp);
+            window.requestAnimationFrame(renderJS);
         }
 
-        function onResize() {
-            if (!window.game.canvas)
-                return;
-
-            game.canvas.width = window.innerWidth;
-            game.canvas.height = window.innerHeight;
+        function resizeCanvasToFitWindow() {
+            var holder = document.getElementById('canvasHolder');
+            var canvas = holder.querySelector('canvas');
+            if (canvas) {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                theInstance.invokeMethodAsync('ResizeInBlazor', canvas.width, canvas.height);
+            }
         }
 
-        window.initGame = (instance) => {
-            var canvasContainer = document.getElementById('canvasContainer'),
-                canvases = canvasContainer.getElementsByTagName('canvas') || [];
-            window.game = {
-                instance: instance,
-                canvas: canvases.length ? canvases[0] : null
-            };
-
-            //window.addEventListener("resize", onResize);
-            //onResize();
-
-            window.requestAnimationFrame(gameLoop);
+        window.initRenderJS = (instance) => {
+            window.theInstance = instance;
+            //window.addEventListener("resize", resizeCanvasToFitWindow);
+            //resizeCanvasToFitWindow();
+            window.requestAnimationFrame(renderJS);
         };
     </script>
 

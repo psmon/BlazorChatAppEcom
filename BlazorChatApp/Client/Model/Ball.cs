@@ -33,10 +33,10 @@ namespace BlazorChatApp.Client.Model
             TargetY = y;
         }
 
-        public void MoveForward(double _Xvel,double _Yvel)
+        public void MoveForward(double targetX,double tagetY)
         {
-            TargetX = X+_Xvel;
-            TargetY = Y+_Yvel;
+            TargetX = targetX;
+            TargetY = tagetY;
         }
 
         public void AddChatMessage(ChatMessage chatMessage)
@@ -47,30 +47,46 @@ namespace BlazorChatApp.Client.Model
 
         public void SyncPos()
         {
-            X=TargetX;
-            Y=TargetY;
+            if(TargetX>0)
+            { 
+                X=TargetX;
+                TargetX=0;
+                Console.WriteLine($"Sync {TargetX},{TargetY}");
+            }
+
+            if(TargetY>0)
+            { 
+                Y=TargetY;
+                TargetY=0;
+                Console.WriteLine($"Sync {TargetX},{TargetY}");
+            }            
         }
         
         public void StepForward()
         {
-            if( TargetX-X > 1)
+            if(TargetX>0)
             {
-                X+=XVel;
-            }
-            else if( X-TargetX > 1)
-            {
-                X-=XVel;
+                if( TargetX-X > 1)
+                {
+                    X+=XVel;
+                }
+                else if( X-TargetX > 1)
+                {
+                    X-=XVel;
+                }
             }
 
-            if( TargetY-Y > 1)
+            if(TargetY>0)
             {
-                Y+=YVel;
+                if( TargetY-Y > 1)
+                {
+                    Y+=YVel;
+                }
+                else if( Y-TargetY > 1)
+                {
+                    Y-=YVel;
+                }
             }
-            else if( Y-TargetY > 1)
-            {
-                Y-=YVel;
-            }
-  
 
             if(!string.IsNullOrEmpty(ChatMessage))
             {

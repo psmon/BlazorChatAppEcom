@@ -94,8 +94,8 @@ namespace BlazorChatApp.Client.Model
 
         public void SyncPos()
         {            
-            foreach (Ball ball in Balls)
-                ball.SyncPos();
+            //foreach (Ball ball in Balls)
+                //ball.SyncPos();
         }
 
         private double RandomVelocity(Random rand, double min, double max)
@@ -112,7 +112,7 @@ namespace BlazorChatApp.Client.Model
 
         public void AddUser(string id, string name, double posx,double posy)
         {
-            double minSpeed = 1.5;
+            double minSpeed = 1.2;
             double maxSpeed = .5;
             double radius = 10;
             Random rand = new Random();
@@ -143,7 +143,7 @@ namespace BlazorChatApp.Client.Model
             var ball = Balls.FirstOrDefault(f=>f.Id.Equals(updateUserPos.Id));
             if(ball!=null)
             {
-                ball.MoveForward(updateUserPos.PosX,updateUserPos.PosY);
+                ball.MoveForward(updateUserPos.AbsPosX,updateUserPos.AbsPosY);
             }
         }
 
