@@ -1,8 +1,9 @@
 ﻿@page "/chatroom"
-@using Blazor.Extensions; 
+@using Blazor.Extensions
 @using Blazor.Extensions.Canvas
-@using Blazor.Extensions.Canvas.Canvas2D;
+@using Blazor.Extensions.Canvas.Canvas2D
 @using BlazorChatApp.Client.Core
+@using BlazorChatApp.Client.Core.Animations
 
 @using Microsoft.AspNetCore.SignalR.Client
 @using BlazorChatApp.Shared;
@@ -12,8 +13,11 @@
 @using System.Drawing
 @inject HttpClient Http
 
+
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime;
+
+<Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
 
 <p>MyName: @Name , RoomName : @RoomName , 채팅창에 방향키누르면 움직입니다. </p>
 
@@ -24,19 +28,21 @@
 
 
 <div id="canvasContainer" style="position: fixed; width: 100%; height: 100%" >
-    <img @ref="_spritesheet" hidden id="spritesheet" src="/img/map1.png" />
+    <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
     <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
     <BECanvas Width=1024 Height=800  @ref="_canvas"></BECanvas>
 </div>
 
 @code {
     //Game
+    Spritesheet _spritesheet;
+
     private string Name{ get; set; }
     private string RoomName{ get; set; }
     public HubConnection hubConnection { get; set; }
     
     BECanvasComponent _canvas;
-    ElementReference _spritesheet;
+    ElementReference _img_back;
     ElementReference _img_char1;    
     
     private string LoginId { get; set; }    
@@ -70,7 +76,7 @@
             }
             else
             {
-                _chatLand.AddUser(user.Id,user.Name, pos.AbsPosX, pos.AbsPosY);
+                _chatLand.AddUser(user.Id,user.Name, pos.AbsPosX, pos.AbsPosY, false);
             }
         });
 
@@ -81,7 +87,9 @@
             {
                 foreach(var pos in updateUserPos)
                 {
-                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY);                        
+                    bool isMe = pos.Id == LoginId ? true : false;
+
+                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMe);                        
                 }
             }
         });
@@ -148,23 +156,18 @@
 
     }
 
-    protected override async Task OnAfterRenderAsync(bool firstRender)
+    public async Task InitGame(AnimationCollection animationCollection)
     {
-        if (!firstRender)
-            return;
-        
         //_context = await _canvas.CreateCanvas2DAsync();
 
         await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));        
-        await base.OnInitializedAsync();
 
         Dictionary<string,ElementReference> resource = new Dictionary<string, ElementReference>();
 
         resource["img-char1"]= _img_char1;
-        resource["img-back"]= _spritesheet;
+        resource["img-back"]= _img_back;
 
-        _chatLand =  await ChatLand.Create(_canvas, resource);
-
+        _chatLand =  await ChatLand.Create(_canvas, resource, animationCollection);
 
         // this will make sure that the viewport is correctly initialized
         await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));  
@@ -186,6 +189,29 @@
 
         await _chatLand.Step(timeStamp);
     }
+
+    [JSInvokable]
+    public async ValueTask OnMouseMove(int mouseX, int mouseY)
+    {
+        InputSystem.Instance.MouseCoords.X = mouseX;
+        InputSystem.Instance.MouseCoords.Y = mouseY;
+    }
+
+    [JSInvokable]
+    public async ValueTask OnMouseDown(MouseButtons button) =>
+        InputSystem.Instance.SetButtonState(button, ButtonState.States.Down);
+
+    [JSInvokable]
+    public async ValueTask OnMouseUp(MouseButtons button) =>
+        InputSystem.Instance.SetButtonState(button, ButtonState.States.Up);
+
+    [JSInvokable]
+    public async ValueTask OnKeyDown(int keyCode) =>
+        InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Down);
+
+    [JSInvokable]
+    public async ValueTask OnKeyUp(int keyCode) =>
+        InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Up);
 
     private int increaseDelta = 50;
 

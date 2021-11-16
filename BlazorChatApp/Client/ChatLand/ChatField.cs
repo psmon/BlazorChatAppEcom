@@ -33,9 +33,8 @@ namespace BlazorChatApp.Client.ChatLand
         public double Width { get; private set; } = 800;
         public double Height { get; private set; } = 600;
 
-        public ChatField(GameObject owner) : base(owner)
+        public ChatField(GameObject owner) : base(owner,"ChatField")
         {
-            
             storeLinks.Add(new StoreLink()
             { 
                 Name = "A몰",

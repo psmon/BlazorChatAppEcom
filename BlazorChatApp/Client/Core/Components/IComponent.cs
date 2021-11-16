@@ -10,5 +10,7 @@ namespace BlazorChatApp.Client.Core.Components
         ValueTask Update(GameContext game);
 
         public GameObject Owner { get; }
+
+        public string Id { get;set; }
     }
 }
