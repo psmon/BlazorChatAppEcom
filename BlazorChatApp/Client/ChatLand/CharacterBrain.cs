@@ -1,7 +1,7 @@
 using System.Numerics;
 using System.Threading.Tasks;
 using BlazorChatApp.Client.Core;
-using BlazorChatApp.Client.Core.Animations;
+using BlazorChatApp.Client.Core.Assets;
 using BlazorChatApp.Client.Core.Components;
 using BlazorChatApp.Client.Core.Exceptions;
 
@@ -9,7 +9,7 @@ namespace BlazorChatApp.Client.ChatLand
 {
     public class CharacterBrain : BaseComponent
     {
-        private readonly Transform _transform;
+        private readonly TransformComponent _transform;
         private readonly AnimationController _animationController;
         private readonly AnimatedSpriteRenderComponent _renderComponent;
         private const float MaxSpeed = 0.25f;
@@ -17,12 +17,12 @@ namespace BlazorChatApp.Client.ChatLand
         private bool _lastMirror =false;
         private bool _isMe = false;        
 
-        public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id) : base(owner, id)
+        public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id) : base(owner)
         {
             _isMe = isMe;
 
-            _transform = owner.Components.Get<Transform>() ??
-                         throw new ComponentNotFoundException<Transform>();
+            _transform = owner.Components.Get<TransformComponent>() ??
+                         throw new ComponentNotFoundException<TransformComponent>();
 
             _renderComponent = owner.Components.Get<AnimatedSpriteRenderComponent>() ??
                                throw new ComponentNotFoundException<AnimatedSpriteRenderComponent>();
@@ -51,7 +51,7 @@ namespace BlazorChatApp.Client.ChatLand
 
             if (right.State == ButtonState.States.Down)
             {
-                _transform.Direction = Vector2.UnitX;
+                _transform.Local.Direction = Vector2.UnitX;
                 _renderComponent.MirrorVertically = false;
                 _lastMirror = false;
                 speed = MaxSpeed;
@@ -59,7 +59,7 @@ namespace BlazorChatApp.Client.ChatLand
 
             if (left.State == ButtonState.States.Down)
             {
-                _transform.Direction = -Vector2.UnitX;
+                _transform.Local.Direction = -Vector2.UnitX;
                 _renderComponent.MirrorVertically = true;
                 _lastMirror = true;
                 speed = MaxSpeed;
@@ -67,20 +67,20 @@ namespace BlazorChatApp.Client.ChatLand
 
             if (ups.State == ButtonState.States.Down)
             {
-                _transform.Direction = -Vector2.UnitY;
+                _transform.Local.Direction = -Vector2.UnitY;
                 _renderComponent.MirrorVertically = _lastMirror;
                 speed = MaxSpeed;
             }
 
             if (downs.State == ButtonState.States.Down)
             {
-                _transform.Direction = Vector2.UnitY;
+                _transform.Local.Direction = Vector2.UnitY;
                 _renderComponent.MirrorVertically = _lastMirror;
                 speed = MaxSpeed;
             }
 
-            var acc = _transform.Direction * speed * game.GameTime.ElapsedTime;
-            _transform.Position += acc;
+            var acc = _transform.Local.Direction * speed * game.GameTime.ElapsedTime;
+            _transform.Local.Position += acc;
 
             _animationController.SetBool("attacking", isAttacking);
             //_animationController.SetBool("jumping", isJumping);

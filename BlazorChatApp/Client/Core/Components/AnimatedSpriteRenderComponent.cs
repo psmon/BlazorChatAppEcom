@@ -1,52 +1,60 @@
 using System.Threading.Tasks;
 using Blazor.Extensions.Canvas.Canvas2D;
-using BlazorChatApp.Client.Core.Animations;
-using BlazorChatApp.Client.Core.Exceptions;
 
+using BlazorChatApp.Client.Core.Assets;
 
 namespace BlazorChatApp.Client.Core.Components
 {
-    public class AnimatedSpriteRenderComponent : BaseComponent
+    public class AnimatedSpriteRenderComponent : BaseComponent, IRenderable
     {
-        private readonly Transform _transform;
+        private readonly TransformComponent _transform;
 
-        private int _currFrameIndex = 0;
         private int _currFramePosX = 0;
-        private float _lastUpdate = 0f;
-
+        private int _currFramePosY = 0;
+        private int _currFrameIndex = 0;
+        private long _lastUpdate = 0;
+        
         private AnimationCollection.Animation _animation;
 
         public AnimatedSpriteRenderComponent(GameObject owner) : base(owner)
         {
-            _transform = owner.Components.Get<Transform>() ??
-                         throw new ComponentNotFoundException<Transform>();
+            _transform = owner.Components.Get<TransformComponent>();
         }
 
         public async ValueTask Render(GameContext game, Canvas2DContext context)
         {
             if (null == Animation)
                 return;
-
-            if (game.GameTime.TotalTime - _lastUpdate > 1000f / Animation.Fps)
+            
+            if (game.GameTime.TotalMilliseconds - _lastUpdate > 1000f/Animation.Fps)
             {
-                if (_currFrameIndex >= Animation.FramesCount)
-                    _currFrameIndex = 0;
+                _lastUpdate = game.GameTime.TotalMilliseconds;
 
-                _lastUpdate = game.GameTime.TotalTime;
-                _currFramePosX = _currFrameIndex * Animation.FrameSize.Width;
-                ++_currFrameIndex;
+                _currFramePosX += Animation.FrameSize.Width;
+                if (_currFramePosX >= Animation.ImageSize.Width)
+                {
+                    _currFramePosX = 0;
+                    _currFramePosY += Animation.FrameSize.Height;
+                }
+
+                if (_currFramePosY >= Animation.ImageSize.Height)
+                    _currFramePosY = 0;
+
+                _currFrameIndex++;
+                if(_currFrameIndex >= Animation.FramesCount)
+                    _currFrameIndex = _currFramePosX = _currFramePosY = 0;
             }
 
             await context.SaveAsync();
 
-            await context.TranslateAsync(_transform.Position.X + (MirrorVertically ? Animation.FrameSize.Width : 0f), _transform.Position.Y);
+            await context.TranslateAsync(_transform.World.Position.X + (MirrorVertically ? Animation.FrameSize.Width : 0f), _transform.World.Position.Y);
 
-            await context.ScaleAsync(MirrorVertically ? -1f:1f, 1f);
+            await context.ScaleAsync(_transform.World.Scale.X * (MirrorVertically ? -1f:1f), _transform.World.Scale.Y);
 
-            await context.DrawImageAsync(Animation.ImageRef,
-                _currFramePosX, 0,
+            await context.DrawImageAsync(Animation.ImageRef, 
+                _currFramePosX, _currFramePosY,
                 Animation.FrameSize.Width, Animation.FrameSize.Height,
-                0, 0,
+                0,0, 
                 Animation.FrameSize.Width, Animation.FrameSize.Height);
 
             await context.RestoreAsync();
@@ -59,7 +67,7 @@ namespace BlazorChatApp.Client.Core.Components
             {
                 if (_animation == value)
                     return;
-                _currFrameIndex = 0;
+                _currFramePosX = _currFramePosY = 0;
                 _animation = value;
             }
         }

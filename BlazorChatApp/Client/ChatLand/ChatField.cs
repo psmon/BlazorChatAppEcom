@@ -21,7 +21,7 @@ namespace BlazorChatApp.Client.ChatLand
         public double PosY{get;set; }
     }
 
-    public class ChatField : BaseComponent
+    public class ChatField : BaseComponent, IRenderable
     {
 
         public DateTime LastRender { get;set; }
@@ -33,7 +33,7 @@ namespace BlazorChatApp.Client.ChatLand
         public double Width { get; private set; } = 800;
         public double Height { get; private set; } = 600;
 
-        public ChatField(GameObject owner) : base(owner,"ChatField")
+        public ChatField(GameObject owner) : base(owner)
         {
             storeLinks.Add(new StoreLink()
             { 
@@ -175,8 +175,8 @@ namespace BlazorChatApp.Client.ChatLand
             await StepForward();
         }
 
-        public async ValueTask Render(Canvas2DContext context)
-        {            
+        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        {
             double fps = 1.0 / (DateTime.Now - LastRender).TotalSeconds;
             LastRender = DateTime.Now;
 
@@ -216,7 +216,6 @@ namespace BlazorChatApp.Client.ChatLand
                 }
                 await context.DrawImageAsync(resource["img-char1"], ball.X,ball.Y,80,80);                
             }
-            
         }
     }
 }

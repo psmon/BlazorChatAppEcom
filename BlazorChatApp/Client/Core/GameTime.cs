@@ -9,6 +9,11 @@ namespace BlazorChatApp.Client.Core
     {
         private float _totalTime = 0;
 
+        public long TotalMilliseconds {get;set;}
+
+        public long ElapsedMilliseconds {get;set;}
+        
+
         /// <summary>
         /// total time elapsed since the beginning of the game
         /// </summary>

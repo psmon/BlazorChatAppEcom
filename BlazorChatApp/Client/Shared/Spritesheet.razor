@@ -1,6 +1,5 @@
 ﻿@using System.Drawing
-@using BlazorChatApp.Client.Core
-@using BlazorChatApp.Client.Core.Animations
+@using BlazorChatApp.Client.Core.Assets
 @using Microsoft.Extensions.Logging
 @inject HttpClient Http
 @inject ILogger<Spritesheet> Logger
@@ -15,7 +14,7 @@
     [Parameter]
     public string Source { get; set; }
 
-    public AnimationCollection Model { get; private set; }
+    private AnimationCollection _model;
 
     private readonly IList<AnimationCollection.Animation> _animations = new List<AnimationCollection.Animation>();
 
@@ -25,7 +24,7 @@
 
         if (data?.Animations != null)
         {
-            Model = new AnimationCollection(data.name);
+            _model = new AnimationCollection(data.name);
 
             foreach (var animationData in data.Animations)
             {
@@ -35,12 +34,12 @@
 
                 Logger.LogInformation($"loading animation {animationData.name}, frame size: {frameSize}, image size: {imageSize}");
 
-                var animation = new AnimationCollection.Animation(animationData.name, animationData.fps, frameSize, elementRef, animationData.imageData, imageSize, Model);
+                var animation = new AnimationCollection.Animation(animationData.name, animationData.fps, frameSize, animationData.framesCount, elementRef, animationData.imageData, imageSize, _model);
 
                 _animations.Add(animation);
             }
 
-            await this.OnModelLoaded.InvokeAsync(this.Model);
+            await this.OnModelLoaded.InvokeAsync(this._model);
         }
     }
 
@@ -56,6 +55,7 @@
         {
             public string name { get; set; }
             public int fps { get; set; }
+            public int framesCount { get; set; }
             public FrameSize frameSize { get; set; }
             public ImageMeta imageMeta { get; set; }
             public string imageData { get; set; }

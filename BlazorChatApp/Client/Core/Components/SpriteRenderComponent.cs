@@ -1,29 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
-
 using Blazor.Extensions.Canvas.Canvas2D;
+
+using BlazorChatApp.Client.Core.Assets;
 
 namespace BlazorChatApp.Client.Core.Components
 {
-    public class SpriteRenderComponent : BaseComponent
+    public class SpriteRenderComponent : BaseComponent, IRenderable
     {
-        private readonly Transform _transform;
+        private readonly TransformComponent _transform;
 
-        public SpriteRenderComponent(Sprite sprite, GameObject owner) : base(owner)
+        private SpriteRenderComponent(GameObject owner) : base(owner)
         {
-            Sprite = sprite ?? throw new ArgumentNullException(nameof(sprite));
-
-            _transform = owner.Components.Get<Transform>() ??
-                         throw new AccessViolationException("Transform component is required");
+            _transform = owner.Components.Get<TransformComponent>();
         }
 
-        public async ValueTask Render(Canvas2DContext context)
+        public async ValueTask Render(GameContext game, Canvas2DContext context)
         {
-            await context.DrawImageAsync(Sprite.SpriteSheet, _transform.Position.X, _transform.Position.Y, Sprite.Size.Width, Sprite.Size.Height);
+            await context.SaveAsync();
+
+            await context.TranslateAsync(_transform.World.Position.X, _transform.World.Position.Y);
+            await context.RotateAsync(_transform.World.Rotation);
+            
+            await context.DrawImageAsync(Sprite.Source, -Sprite.Origin.X, -Sprite.Origin.Y ,
+                Sprite.Size.Width, Sprite.Size.Height);
+            
+            await context.RestoreAsync();
         }
 
-        public Sprite Sprite { get; }
+        public Sprite Sprite { get; set; }
     }
 }

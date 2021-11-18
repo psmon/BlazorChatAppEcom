@@ -7,24 +7,30 @@ using System.Threading.Tasks;
 
 namespace BlazorChatApp.Client.Core.Components
 {
-    public class Transform : BaseComponent
+    public class Transform
     {
-        public Transform(GameObject owner) : base(owner)
+        public Vector2 Position;
+
+        public Vector2 Scale;
+
+        public Vector2 Direction;
+
+        public float Rotation;
+
+        public void Clone(ref Transform source)
         {
+            this.Position = source.Position;
+            this.Scale = source.Scale;
+            this.Direction = source.Direction;
+            this.Rotation = source.Rotation;
         }
 
-        public override async ValueTask Update(GameContext game)
+        public static Transform Identity() => new Transform()
         {
-            _boundingBox.Size = this.Size;
-            _boundingBox.X = (int)this.Position.X;
-            _boundingBox.Y = (int)this.Position.Y;
-        }
-
-        public Vector2 Position { get; set; } = Vector2.Zero;
-        public Vector2 Direction { get; set; } = Vector2.UnitX;
-        public Size Size { get; set; } = Size.Empty;
-
-        private Rectangle _boundingBox;
-        public Rectangle BoundingBox => _boundingBox;
+            Position = Vector2.Zero,
+            Scale = Vector2.One,
+            Direction = Vector2.UnitX,
+            Rotation = 0f
+        };
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Akka.Actor;
@@ -57,40 +56,5 @@ namespace BlazorChatApp.Server.Hubs
         {
             roomActor.Tell(chatMessage);
         }
-
-        // Server To Client
-        /*
-        public async Task OnJoinRoom(RoomInfo roomInfo, UserInfo user, UpdateUserPos updateUserPos)
-        {
-            await Clients.All.SendAsync("OnJoinRoom", user, roomInfo, updateUserPos);
-        }
-
-        public async Task OnSyncRoom(UserInfo user, List<UpdateUserPos> updateUserPos)
-        {
-            await Clients.All.SendAsync("OnSyncRoom", user, updateUserPos);
-        }
-
-        public async Task OnLeaveRoom(LeaveRoom leaveRoom)
-        {
-            await Clients.All.SendAsync("OnLeaveRoom", leaveRoom);
-        }
-
-        public async Task OnUpdateUserPos(UpdateUserPos updateUserPos)
-        {
-            await Clients.All.SendAsync("OnUpdateUserPos", updateUserPos);
-        }
-
-        
-        public async Task SendMessage(string user, string message)       
-        {
-            await Clients.All.SendAsync("ReceiveMessage", user, message);
-        }
-
-        public async Task SendRoomMessage(RoomCmd roomCmd)
-        {
-            roomActor.Tell(roomCmd);        
-        }
-        */
-
     }
 }

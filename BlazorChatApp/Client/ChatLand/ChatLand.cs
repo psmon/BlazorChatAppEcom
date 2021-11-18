@@ -7,7 +7,7 @@ using Blazor.Extensions;
 using Blazor.Extensions.Canvas.Canvas2D;
 
 using BlazorChatApp.Client.Core;
-using BlazorChatApp.Client.Core.Animations;
+using BlazorChatApp.Client.Core.Assets;
 using BlazorChatApp.Client.Core.Components;
 using BlazorChatApp.Shared;
 
@@ -17,82 +17,77 @@ namespace BlazorChatApp.Client.ChatLand
 {
     public class ChatLand : GameContext
     {
-        private GameObject _chatLandGame;        
+        //private GameObject _chatLandGame;
+
+        private readonly SceneGraph _sceneGraph;
 
         private AnimationCollection _animationCollection;
 
         private Canvas2DContext _context { get;set; }
         public DateTime LastRender { get;set; }
 
-        public ChatLand()
-        {
+        public ChatLand(Canvas2DContext context, AnimationCollection animationCollection)
+        {            
+            _context = context;
+            _animationCollection = animationCollection;
+            _sceneGraph = new SceneGraph();            
             LastRender = DateTime.Now;            
         }
 
         public static async ValueTask<ChatLand> Create(BECanvasComponent canvas, Dictionary<string,ElementReference> resource, AnimationCollection animationCollection )
         {
-            
-
-            var chatLandGame = new GameObject();
-            chatLandGame.Components.Add(new Transform(chatLandGame)
-            {
-                Position = Vector2.Zero,
-                Direction = Vector2.One,
-            });
-
-            chatLandGame.Components.Add(new ChatField(chatLandGame));
-
             var canvasContext = await canvas.CreateCanvas2DAsync();
-            var game = new ChatLand 
-            {   
-                _context = canvasContext,
-                _chatLandGame= chatLandGame,
-                _animationCollection = animationCollection
-            };
+            
+            var chatLandGame = new ChatLand(canvasContext, animationCollection);
 
-            var chatField = chatLandGame.Components.Get<ChatField>();
-            chatField.resource = resource;
+            var chatField = new GameObject();
 
-            return game;
-        }
+            chatField.Components.Add<ChatField>();
+            chatField.Components.Get<ChatField>().resource = resource;
+
+            chatLandGame._sceneGraph.Root.AddChild(chatField);
 
 
-        public void AddUser(string id, string name, double posx,double posy, bool isMe)
-        {
-            //var chatField =_chatLandGame.Components.Get<ChatField>();
-            //chatField.AddUser(id, name, posx, posy);
+            var warrior = new GameObject();
+            var animation = animationCollection.GetAnimation("Idle");
+            chatLandGame.InitAnimationController(animationCollection, warrior);
 
-            var warrior = _chatLandGame;
+            var sunTransform = new TransformComponent(warrior);
+            sunTransform.Local.Position.X = canvas.Width / 2;
+            sunTransform.Local.Position.Y = canvas.Height / 2;
+            sunTransform.Local.Scale = new Vector2(1.5f);
 
-            var animation = _animationCollection.GetAnimation("Idle");
+            warrior.Components.Add(sunTransform);
 
-            warrior.Components.Add(new Transform(warrior)
-            {
-                Position = new Vector2((float)posx, (float)posy),
-                Direction = Vector2.Zero,
-                Size = animation.FrameSize
-            });
+            warrior.Components.Add(new CharacterBrain(animationCollection, warrior,true,"1234"));
 
             warrior.Components.Add(new AnimatedSpriteRenderComponent(warrior)
             {
                 Animation = animation
             });
 
-            InitAnimationController(_animationCollection, warrior);
+            chatLandGame._sceneGraph.Root.AddChild(warrior);
 
-            warrior.Components.Add(new CharacterBrain(_animationCollection, warrior, isMe, id));
+
+            return chatLandGame;
+        }
+
+
+        public void AddUser(string id, string name, double posx,double posy, bool isMe)
+        {
+            //_sceneGraph.Root.AddChild(warrior);
 
         }
 
         public void RemoveUser(string id)
         {
-            var chatField =_chatLandGame.Components.Get<ChatField>();
-            chatField.RemoveUser(id);
+            //var chatField =_chatLandGame.Components.Get<ChatField>();
+            //chatField.RemoveUser(id);
         }
 
         public void UpdateUserPos(UpdateUserPos updateUserPos)
         {
-            var characterBrain =_chatLandGame.Components.Get<CharacterBrain>();
+            //var characterBrain =_chatLandGame.Components.Get<CharacterBrain>();
 
             //chatField.UpdateUserPos(updateUserPos);
 
@@ -102,14 +97,15 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void ChatMessage(ChatMessage chatMessage)
         {
-            var chatField =_chatLandGame.Components.Get<ChatField>();
-            chatField.ChatMessage(chatMessage);
+            //var chatField =_chatLandGame.Components.Get<ChatField>();
+            //chatField.ChatMessage(chatMessage);
         }
 
         public StoreLink CollisionCheck(double x, double y)
         {
-            var chatField =_chatLandGame.Components.Get<ChatField>();
-            return chatField.CollisionCheck(x, y);
+            //var chatField =_chatLandGame.Components.Get<ChatField>();
+            //return chatField.CollisionCheck(x, y);
+            return null;
         }
 
         private void InitAnimationController(AnimationCollection animationCollection, GameObject warrior)
@@ -168,7 +164,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         protected override async ValueTask Update()
         {
-            await _chatLandGame.Update(this);
+            await _sceneGraph.Update(this);
         }
 
         protected override async ValueTask Render()
@@ -176,13 +172,22 @@ namespace BlazorChatApp.Client.ChatLand
             await _context.BeginBatchAsync();
             await _context.ClearRectAsync(0, 0, Display.Size.Width, Display.Size.Height);
 
-            var chatField =_chatLandGame.Components.Get<ChatField>();
-            await chatField.Render(_context);
-
-            var spriteRenderer = _chatLandGame.Components.Get<AnimatedSpriteRenderComponent>();
-            await spriteRenderer.Render(this, _context);
+            await Render(_sceneGraph.Root);
             
             await _context.EndBatchAsync();
+        }
+
+        private async ValueTask Render(GameObject node)
+        {
+            if (null == node)
+                return;
+
+            foreach(var component in node.Components)
+                if (component is IRenderable renderable)
+                    await renderable.Render(this, _context);
+
+            foreach (var child in node.Children)
+                await Render(child);
         }
     }
 }

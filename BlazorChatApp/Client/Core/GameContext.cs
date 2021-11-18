@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 namespace BlazorChatApp.Client.Core
 {
     public abstract class GameContext
-    {
+    {        
         public async ValueTask Step(float timeStamp)
         {
             this.GameTime.TotalTime = timeStamp;
