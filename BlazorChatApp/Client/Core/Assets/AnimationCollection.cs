@@ -44,6 +44,8 @@ namespace BlazorChatApp.Client.Core.Assets
                 ImageRef = imageRef;
                 ImageData = imageData;
                 ImageSize = imageSize;
+
+                this.FramesCount = this.ImageSize.Width / this.FrameSize.Width;
              
                 animations.AddAnimation(this);
             }

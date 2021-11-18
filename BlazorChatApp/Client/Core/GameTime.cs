@@ -1,36 +1,56 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace BlazorChatApp.Client.Core
 {
-    public class GameTime
+        public class GameTime
     {
-        private float _totalTime = 0;
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
-        public long TotalMilliseconds {get;set;}
+        private long _lastTick = 0;
+        private long _elapsedTicks = 0;
+        private long _elapsedMilliseconds = 0;
+        private long _lastMilliseconds = 0;
 
-        public long ElapsedMilliseconds {get;set;}
-        
-
-        /// <summary>
-        /// total time elapsed since the beginning of the game
-        /// </summary>
-        public float TotalTime
+        public void Start()
         {
-            get => _totalTime;
-            set
-            {
-                this.ElapsedTime = value - _totalTime;
-                _totalTime = value;
+            _stopwatch.Reset();
+            _stopwatch.Start();
 
-            }
+            _lastTick = 0;
+            _lastMilliseconds = 0;
+        }
+
+        public void Step()
+        {
+            _elapsedTicks = _stopwatch.ElapsedTicks - _lastTick;
+            _elapsedMilliseconds = _stopwatch.ElapsedMilliseconds - _lastMilliseconds;
+
+            _lastTick = _stopwatch.ElapsedTicks;
+            _lastMilliseconds = _stopwatch.ElapsedMilliseconds;
         }
 
         /// <summary>
-        /// time elapsed since last frame
+        /// total time elapsed since the beginning of the game, in ticks
         /// </summary>
-        public float ElapsedTime { get; private set; }
+        public long TotalTicks => _stopwatch.ElapsedTicks;
+
+        /// <summary>
+        /// total time elapsed since the beginning of the game, in milliseconds
+        /// </summary>
+        public long TotalMilliseconds => _stopwatch.ElapsedMilliseconds;
+
+        /// <summary>
+        /// time elapsed since last frame, in ticks
+        /// </summary>
+        public long ElapsedTicks => _elapsedTicks;
+
+        /// <summary>
+        /// time elapsed since last frame, in milliseconds
+        /// </summary>
+        public long ElapsedMilliseconds => _elapsedMilliseconds;
     }
 }

@@ -23,7 +23,6 @@ namespace BlazorChatApp.Client.ChatLand
 
     public class ChatField : BaseComponent, IRenderable
     {
-
         public DateTime LastRender { get;set; }
 
         public Dictionary<string,ElementReference> resource {get;set; }

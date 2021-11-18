@@ -42,31 +42,10 @@ namespace BlazorChatApp.Client.ChatLand
 
             var chatField = new GameObject();
 
-            chatField.Components.Add<ChatField>();
+            chatField.Components.Add(new ChatField(chatField));
             chatField.Components.Get<ChatField>().resource = resource;
 
             chatLandGame._sceneGraph.Root.AddChild(chatField);
-
-
-            var warrior = new GameObject();
-            var animation = animationCollection.GetAnimation("Idle");
-            chatLandGame.InitAnimationController(animationCollection, warrior);
-
-            var sunTransform = new TransformComponent(warrior);
-            sunTransform.Local.Position.X = canvas.Width / 2;
-            sunTransform.Local.Position.Y = canvas.Height / 2;
-            sunTransform.Local.Scale = new Vector2(1.5f);
-
-            warrior.Components.Add(sunTransform);
-
-            warrior.Components.Add(new CharacterBrain(animationCollection, warrior,true,"1234"));
-
-            warrior.Components.Add(new AnimatedSpriteRenderComponent(warrior)
-            {
-                Animation = animation
-            });
-
-            chatLandGame._sceneGraph.Root.AddChild(warrior);
 
 
             return chatLandGame;
@@ -75,7 +54,24 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void AddUser(string id, string name, double posx,double posy, bool isMe)
         {
-            //_sceneGraph.Root.AddChild(warrior);
+            var warrior = new GameObject();
+            var animation = _animationCollection.GetAnimation("Idle");            
+
+            var sunTransform = new TransformComponent(warrior);            
+            sunTransform.World.Position.X=100;
+            sunTransform.World.Position.Y=100;
+            warrior.Components.Add(sunTransform);
+
+            warrior.Components.Add(new AnimatedSpriteRenderComponent(warrior)
+            {
+                Animation = animation
+            });
+
+            InitAnimationController(_animationCollection, warrior);
+
+            warrior.Components.Add(new CharacterBrain(_animationCollection, warrior ,isMe ,"1234"));
+
+            _sceneGraph.Root.AddChild(warrior);
 
         }
 

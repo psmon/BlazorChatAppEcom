@@ -79,7 +79,7 @@ namespace BlazorChatApp.Client.ChatLand
                 speed = MaxSpeed;
             }
 
-            var acc = _transform.Local.Direction * speed * game.GameTime.ElapsedTime;
+            var acc = _transform.Local.Direction * speed * game.GameTime.ElapsedMilliseconds;
             _transform.Local.Position += acc;
 
             _animationController.SetBool("attacking", isAttacking);
