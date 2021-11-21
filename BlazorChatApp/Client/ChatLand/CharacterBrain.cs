@@ -21,6 +21,10 @@ namespace BlazorChatApp.Client.ChatLand
 
         private Queue<Keys> _queue;
 
+        private const int KeySpeed = 3;
+
+        private int _keyTime = KeySpeed;
+
         public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id) : base(owner)
         {
             _isMe = isMe;
@@ -110,8 +114,19 @@ namespace BlazorChatApp.Client.ChatLand
 
         public async ValueTask UpdateByQueue(GameContext game)
         {
-            Keys key;
-            _queue.TryDequeue(out key);
+            Keys key;            
+
+            if(_keyTime < 0 )
+            {
+                _queue.TryDequeue(out key);
+                _keyTime = KeySpeed;
+            }
+            else
+            {
+                _queue.TryPeek(out key);
+            }
+            
+            _keyTime--;
 
             var speed = 0f;
 
