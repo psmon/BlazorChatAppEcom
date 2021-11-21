@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 using BlazorChatApp.Client.Core;
@@ -15,11 +16,16 @@ namespace BlazorChatApp.Client.ChatLand
         private const float MaxSpeed = 0.25f;
 
         private bool _lastMirror =false;
-        private bool _isMe = false;        
+
+        private bool _isMe = false;
+
+        private Queue<Keys> _queue;
 
         public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id) : base(owner)
         {
             _isMe = isMe;
+
+            _queue= new Queue<Keys>();
 
             _transform = owner.Components.Get<TransformComponent>() ??
                          throw new ComponentNotFoundException<TransformComponent>();
@@ -31,10 +37,25 @@ namespace BlazorChatApp.Client.ChatLand
                                    throw new ComponentNotFoundException<AnimationController>();
         }
 
+        public void OnMoveKey(Keys keys)
+        {
+            _queue.Enqueue(keys);
+        }
+
         public override async ValueTask Update(GameContext game)
         {
-            if(!_isMe) return;
+            if(_isMe)
+            {
+                await UpdateByKey(game);
+            }
+            else
+            {
+                await UpdateByQueue(game);
+            }
+        }
 
+        public async ValueTask UpdateByKey(GameContext game)
+        {
             var right = InputSystem.Instance.GetKeyState(Keys.Right);
             var left = InputSystem.Instance.GetKeyState(Keys.Left);
 
@@ -84,6 +105,49 @@ namespace BlazorChatApp.Client.ChatLand
 
             _animationController.SetBool("attacking", isAttacking);
             //_animationController.SetBool("jumping", isJumping);
+            _animationController.SetFloat("speed", speed);
+        }
+
+        public async ValueTask UpdateByQueue(GameContext game)
+        {
+            Keys key;
+            _queue.TryDequeue(out key);
+
+            var speed = 0f;
+
+            if (key == Keys.Right)
+            {
+                _transform.Local.Direction = Vector2.UnitX;
+                _renderComponent.MirrorVertically = false;
+                _lastMirror = false;
+                speed = MaxSpeed;
+            }
+
+            if (key == Keys.Left)
+            {
+                _transform.Local.Direction = -Vector2.UnitX;
+                _renderComponent.MirrorVertically = true;
+                _lastMirror = true;
+                speed = MaxSpeed;
+            }
+
+            if (key == Keys.Up)
+            {
+                _transform.Local.Direction = -Vector2.UnitY;
+                _renderComponent.MirrorVertically = _lastMirror;
+                speed = MaxSpeed;
+            }
+
+            if (key == Keys.Down)
+            {
+                _transform.Local.Direction = Vector2.UnitY;
+                _renderComponent.MirrorVertically = _lastMirror;
+                speed = MaxSpeed;
+            }
+
+            var acc = _transform.Local.Direction * speed * game.GameTime.ElapsedMilliseconds;
+            _transform.Local.Position += acc;
+
             _animationController.SetFloat("speed", speed);
         }
     }

@@ -69,7 +69,9 @@ namespace BlazorChatApp.Client.ChatLand
 
             InitAnimationController(_animationCollection, warrior);
 
-            warrior.Components.Add(new CharacterBrain(_animationCollection, warrior ,isMe ,"1234"));
+            warrior.Components.Add(new CharacterBrain(_animationCollection, warrior ,isMe , id));
+
+            warrior.HashId = id;            
 
             _sceneGraph.Root.AddChild(warrior);
 
@@ -77,18 +79,33 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void RemoveUser(string id)
         {
-            //var chatField =_chatLandGame.Components.Get<ChatField>();
-            //chatField.RemoveUser(id);
+            _sceneGraph.Root.RemoveById(id);
         }
 
         public void UpdateUserPos(UpdateUserPos updateUserPos)
         {
-            //var characterBrain =_chatLandGame.Components.Get<CharacterBrain>();
+            var characterBrain = _sceneGraph.Root.FindById<CharacterBrain>(updateUserPos.Id);
 
-            //chatField.UpdateUserPos(updateUserPos);
+            Keys keys = Keys.Idle;
 
-            //var chatField =_chatLandGame.Components.Get<ChatField>();
-            //chatField.UpdateUserPos(updateUserPos);
+            if(updateUserPos.PosX < 0 )
+            {
+                keys = Keys.Left;
+            }
+            if(updateUserPos.PosX > 0 )
+            {
+                keys = Keys.Right;
+            }
+            if(updateUserPos.PosY < 0 )
+            {
+                keys = Keys.Up;
+            }
+            if(updateUserPos.PosY > 0 )
+            {
+                keys = Keys.Down;
+            }
+
+            characterBrain.OnMoveKey(keys);
         }
 
         public void ChatMessage(ChatMessage chatMessage)

@@ -206,9 +206,30 @@
         InputSystem.Instance.SetButtonState(button, ButtonState.States.Up);
 
     [JSInvokable]
-    public async ValueTask OnKeyDown(int keyCode) =>
+    public async ValueTask OnKeyDown(int keyCode)
+    {
         InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Down);
+        if((Keys)keyCode == Keys.Left)
+        {
+            KeyLeft();
+        }
 
+        if((Keys)keyCode == Keys.Right)
+        {
+            KeyRight();
+        }
+
+        if((Keys)keyCode == Keys.Up)
+        {
+            KeyUp();
+        }
+
+        if((Keys)keyCode == Keys.Down)
+        {
+            KeyDown();
+        }
+    } 
+            
     [JSInvokable]
     public async ValueTask OnKeyUp(int keyCode) =>
         InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Up);

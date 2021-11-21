@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using BlazorChatApp.Client.Core.Components;
+using BlazorChatApp.Client.Core.Exceptions;
 
 namespace BlazorChatApp.Client.Core
 {
@@ -12,6 +13,8 @@ namespace BlazorChatApp.Client.Core
         private static int _lastId = 0;
 
         private readonly IList<GameObject> _children;
+
+        public string HashId { get;set; }
 
         public GameObject()
         {
@@ -36,6 +39,30 @@ namespace BlazorChatApp.Client.Core
 
             child.Parent = this;
             _children.Add(child);
+        }
+
+        public T FindById<T>(string id) where T : class, IComponent
+        {
+            foreach (var child in _children)
+            {
+                if(child.HashId == id)
+                {
+                    return child.Components.Get<T>();                    
+                }
+            }
+            return default(T);
+        }
+
+        public void RemoveById(string id)
+        {
+            foreach (var child in _children)
+            {
+                if(child.HashId == id)
+                {
+                    _children.Remove(child);
+                    return;
+                }
+            }
         }
 
         public async ValueTask Update(GameContext game)

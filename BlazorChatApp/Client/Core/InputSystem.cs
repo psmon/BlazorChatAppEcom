@@ -81,5 +81,6 @@ namespace BlazorChatApp.Client.Core
         Space = 32,
         LeftCtrl = 17,
         LeftAlt = 18,
+        Idle = -100
     }
 }
