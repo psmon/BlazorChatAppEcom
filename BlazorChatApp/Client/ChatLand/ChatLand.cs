@@ -58,8 +58,8 @@ namespace BlazorChatApp.Client.ChatLand
             var animation = _animationCollection.GetAnimation("Idle");            
 
             var sunTransform = new TransformComponent(warrior);            
-            sunTransform.World.Position.X=100;
-            sunTransform.World.Position.Y=100;
+            sunTransform.Local.Position.X=(float)posx;
+            sunTransform.Local.Position.Y=(float)posy;
             warrior.Components.Add(sunTransform);
 
             warrior.Components.Add(new AnimatedSpriteRenderComponent(warrior)
@@ -69,7 +69,9 @@ namespace BlazorChatApp.Client.ChatLand
 
             InitAnimationController(_animationCollection, warrior);
 
-            warrior.Components.Add(new CharacterBrain(_animationCollection, warrior ,isMe , id));
+            var character = new CharacterBrain(_animationCollection, warrior ,isMe , id);
+
+            warrior.Components.Add(character);
 
             warrior.HashId = id;            
 
@@ -105,7 +107,7 @@ namespace BlazorChatApp.Client.ChatLand
                 keys = Keys.Down;
             }
 
-            characterBrain.OnMoveKey(keys);
+            characterBrain.OnMoveKey(updateUserPos);
         }
 
         public void ChatMessage(ChatMessage chatMessage)

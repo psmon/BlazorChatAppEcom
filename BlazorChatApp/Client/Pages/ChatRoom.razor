@@ -208,31 +208,35 @@
     [JSInvokable]
     public async ValueTask OnKeyDown(int keyCode)
     {
-        InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Down);
+        //InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Down);
+
         if((Keys)keyCode == Keys.Left)
         {
-            KeyLeft();
+            await KeyLeft();
         }
 
         if((Keys)keyCode == Keys.Right)
         {
-            KeyRight();
+            await KeyRight();
         }
 
         if((Keys)keyCode == Keys.Up)
         {
-            KeyUp();
+            await KeyUp();
         }
 
         if((Keys)keyCode == Keys.Down)
         {
-            KeyDown();
+            await KeyDown();
         }
     } 
             
     [JSInvokable]
-    public async ValueTask OnKeyUp(int keyCode) =>
-        InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Up);
+    public async ValueTask OnKeyUp(int keyCode)
+    {
+        //InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Up);        
+    }
+    
 
     private int increaseDelta = 50;
 

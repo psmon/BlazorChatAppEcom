@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.Diagnostics;
 
 namespace BlazorChatApp.Client.Core
 {
-        public class GameTime
+    public class GameTime
     {
         private readonly Stopwatch _stopwatch = new Stopwatch();
 

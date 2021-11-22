@@ -5,23 +5,30 @@ using BlazorChatApp.Client.Core;
 using BlazorChatApp.Client.Core.Assets;
 using BlazorChatApp.Client.Core.Components;
 using BlazorChatApp.Client.Core.Exceptions;
+using BlazorChatApp.Shared;
 
 namespace BlazorChatApp.Client.ChatLand
 {
     public class CharacterBrain : BaseComponent
     {
         private readonly TransformComponent _transform;
+
+        private Transform _goal_transform = Transform.Identity();        
+
         private readonly AnimationController _animationController;
         private readonly AnimatedSpriteRenderComponent _renderComponent;
+        
         private const float MaxSpeed = 0.25f;
+
+        private const float StopSpeed = 0.55f;        
 
         private bool _lastMirror =false;
 
         private bool _isMe = false;
 
-        private Queue<Keys> _queue;
+        private Queue<UpdateUserPos> _queue;
 
-        private const int KeySpeed = 3;
+        private const int KeySpeed = 10;
 
         private int _keyTime = KeySpeed;
 
@@ -29,10 +36,12 @@ namespace BlazorChatApp.Client.ChatLand
         {
             _isMe = isMe;
 
-            _queue= new Queue<Keys>();
-
+            _queue= new Queue<UpdateUserPos>();
+            
             _transform = owner.Components.Get<TransformComponent>() ??
                          throw new ComponentNotFoundException<TransformComponent>();
+
+            _goal_transform.Position = _transform.Local.Position;
 
             _renderComponent = owner.Components.Get<AnimatedSpriteRenderComponent>() ??
                                throw new ComponentNotFoundException<AnimatedSpriteRenderComponent>();
@@ -41,21 +50,14 @@ namespace BlazorChatApp.Client.ChatLand
                                    throw new ComponentNotFoundException<AnimationController>();
         }
 
-        public void OnMoveKey(Keys keys)
+        public void OnMoveKey(UpdateUserPos updateUserPos)
         {
-            _queue.Enqueue(keys);
+            _queue.Enqueue(updateUserPos);
         }
 
         public override async ValueTask Update(GameContext game)
         {
-            if(_isMe)
-            {
-                await UpdateByKey(game);
-            }
-            else
-            {
-                await UpdateByQueue(game);
-            }
+            await UpdateByQueue(game);
         }
 
         public async ValueTask UpdateByKey(GameContext game)
@@ -114,23 +116,23 @@ namespace BlazorChatApp.Client.ChatLand
 
         public async ValueTask UpdateByQueue(GameContext game)
         {
-            Keys key;            
+            UpdateUserPos updateUserPos;            
 
-            if(_keyTime < 0 )
+            _queue.TryDequeue(out updateUserPos);
+
+            if(updateUserPos != null)
             {
-                _queue.TryDequeue(out key);
-                _keyTime = KeySpeed;
+                _goal_transform.Position.X = (float)updateUserPos.AbsPosX;
+                _goal_transform.Position.Y = (float)updateUserPos.AbsPosY;
             }
-            else
-            {
-                _queue.TryPeek(out key);
-            }
-            
-            _keyTime--;
 
             var speed = 0f;
 
-            if (key == Keys.Right)
+            float diffX = _goal_transform.Position.X - _transform.Local.Position.X;
+            float diffY = _goal_transform.Position.Y - _transform.Local.Position.Y;
+
+
+            if (diffX > 0 && diffX > StopSpeed)
             {
                 _transform.Local.Direction = Vector2.UnitX;
                 _renderComponent.MirrorVertically = false;
@@ -138,7 +140,7 @@ namespace BlazorChatApp.Client.ChatLand
                 speed = MaxSpeed;
             }
 
-            if (key == Keys.Left)
+            if (diffX < 0 && diffX < -StopSpeed)
             {
                 _transform.Local.Direction = -Vector2.UnitX;
                 _renderComponent.MirrorVertically = true;
@@ -146,14 +148,14 @@ namespace BlazorChatApp.Client.ChatLand
                 speed = MaxSpeed;
             }
 
-            if (key == Keys.Up)
+            if ( diffY < 0 &&  diffY < StopSpeed)
             {
                 _transform.Local.Direction = -Vector2.UnitY;
                 _renderComponent.MirrorVertically = _lastMirror;
                 speed = MaxSpeed;
             }
 
-            if (key == Keys.Down)
+            if ( diffY > 0 && diffY > -StopSpeed)
             {
                 _transform.Local.Direction = Vector2.UnitY;
                 _renderComponent.MirrorVertically = _lastMirror;
