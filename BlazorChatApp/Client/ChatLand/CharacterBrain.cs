@@ -120,10 +120,28 @@ namespace BlazorChatApp.Client.ChatLand
 
             _queue.TryDequeue(out updateUserPos);
 
+            float moveX , moveY;
+
             if(updateUserPos != null)
             {
+                moveX = (float)updateUserPos.PosX;
+                moveY = (float)updateUserPos.PosY;
+
                 _goal_transform.Position.X = (float)updateUserPos.AbsPosX;
                 _goal_transform.Position.Y = (float)updateUserPos.AbsPosY;
+
+                if(moveX > 0 ){
+                    _goal_transform.Direction = Vector2.UnitX;
+                }
+                if(moveX < 0 ){
+                    _goal_transform.Direction = -Vector2.UnitX;
+                }
+                if(moveY < 0 ){
+                    _goal_transform.Direction = -Vector2.UnitY;
+                }
+                if(moveY > 0 ){
+                    _goal_transform.Direction = Vector2.UnitY;
+                }
             }
 
             var speed = 0f;
@@ -131,8 +149,7 @@ namespace BlazorChatApp.Client.ChatLand
             float diffX = _goal_transform.Position.X - _transform.Local.Position.X;
             float diffY = _goal_transform.Position.Y - _transform.Local.Position.Y;
 
-
-            if (diffX > 0 && diffX > StopSpeed)
+            if (diffX > 0 && _goal_transform.Direction == Vector2.UnitX)
             {
                 _transform.Local.Direction = Vector2.UnitX;
                 _renderComponent.MirrorVertically = false;
@@ -140,7 +157,7 @@ namespace BlazorChatApp.Client.ChatLand
                 speed = MaxSpeed;
             }
 
-            if (diffX < 0 && diffX < -StopSpeed)
+            if (diffX < 0 && _goal_transform.Direction == -Vector2.UnitX)
             {
                 _transform.Local.Direction = -Vector2.UnitX;
                 _renderComponent.MirrorVertically = true;
@@ -148,14 +165,14 @@ namespace BlazorChatApp.Client.ChatLand
                 speed = MaxSpeed;
             }
 
-            if ( diffY < 0 &&  diffY < StopSpeed)
+            if ( diffY < 0 && _goal_transform.Direction == -Vector2.UnitY)
             {
                 _transform.Local.Direction = -Vector2.UnitY;
                 _renderComponent.MirrorVertically = _lastMirror;
                 speed = MaxSpeed;
             }
 
-            if ( diffY > 0 && diffY > -StopSpeed)
+            if ( diffY > 0 && _goal_transform.Direction == Vector2.UnitY)
             {
                 _transform.Local.Direction = Vector2.UnitY;
                 _renderComponent.MirrorVertically = _lastMirror;

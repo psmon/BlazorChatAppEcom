@@ -19,19 +19,33 @@
 
 <Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
 
+<!--
 <p>MyName: @Name , RoomName : @RoomName , 채팅창에 방향키누르면 움직입니다. </p>
-
 <input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
 <h6>@KeyPressed </h6>
 <h6>@EventInfo</h6>
+-->
 
-
-
-<div id="canvasContainer" style="position: fixed; width: 100%; height: 100%" >
+<div id="canvasContainer" style="position: fixed; width: 800px; height: 600px" >
     <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
     <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
-    <BECanvas Width=1024 Height=800  @ref="_canvas"></BECanvas>
+    <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
 </div>
+
+<div style="height: 600px">
+</div>
+@if (shopItems != null)
+{    
+    @if (@visible)
+    {
+        <h6>추천 쇼핑아이템</h6>
+        @foreach (var shopItem in shopItems)
+        {         
+            <img src=@shopItem.imageUrl1 width=120 height=80 />
+        }        
+    }
+}
+
 
 @code {
     //Game
@@ -52,12 +66,17 @@
     string TextValue { get; set; }    
     private SearchResult searchResult;
 
+    private ShopItem[] shopItems;
+
+    private bool visible = false;
+
     bool mandatory = true;
     
     DateTime lastPopupTime = DateTime.Now;
 
     protected override async Task OnInitializedAsync()
     {
+        shopItems = await Http.GetFromJsonAsync<ShopItem[]>("ShopItem");
 
         LoginId = Guid.NewGuid().ToString();    //Fake Login ID
 
@@ -113,15 +132,17 @@
                 {
                     TimeSpan offset = DateTime.Now - lastPopupTime;
                     if(offset.TotalSeconds > 5)
-                    {                        
-                        //OpenDrawer(Anchor.Right);
-                        lastPopupTime = DateTime.Now;
-                        StateHasChanged();
-                    }
+                    {
+                        
+                    }                    
+                    visible = true;
+                    lastPopupTime = DateTime.Now;
+                    StateHasChanged();
                 }
                 else
                 {
-                    
+                    visible = false;
+                    StateHasChanged();
                 }
             }
             _chatLand.UpdateUserPos(userPos);
@@ -179,7 +200,7 @@
     {
         if (null == _chatLand) return;
 
-        _chatLand.Display.Size = new Size(screenWidth, screenHeight);
+        _chatLand.Display.Size = new Size(800, 600);
     }
 
     [JSInvokable]

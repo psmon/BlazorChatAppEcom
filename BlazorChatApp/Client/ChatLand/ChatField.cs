@@ -36,35 +36,35 @@ namespace BlazorChatApp.Client.ChatLand
         {
             storeLinks.Add(new StoreLink()
             { 
-                Name = "A몰",
+                Name = "아우터",
                 PosX = 145,PosY=128,
                 Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "B몰",
+                Name = "원피스",
                 PosX = 105,PosY=258,
                 Link="BGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "C몰",
+                Name = "슈즈",
                 PosX = 75,PosY=378,
                 Link="CGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "D몰",
+                Name = "모자",
                 PosX = 150,PosY=378,
                 Link="DGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "E몰",
+                Name = "가방",
                 PosX = 330,PosY=378,
                 Link="EGROUPBEST"
             });
@@ -84,7 +84,7 @@ namespace BlazorChatApp.Client.ChatLand
             Console.WriteLine($"x==>{x} y==>{y}");
             foreach(var storeLink in storeLinks)
             {
-                var distance = Math.Sqrt((Math.Pow(storeLink.PosX - x, 2) + Math.Pow(storeLink.PosY - y, 2)));
+                var distance = Math.Sqrt((Math.Pow(storeLink.PosX-50 - x, 2) + Math.Pow(storeLink.PosY-80 - y, 2)));
                 if (distance < inDistance)
                 {
                     Console.WriteLine($"Link===>{storeLink.Link} Dist{distance}");
@@ -187,7 +187,7 @@ namespace BlazorChatApp.Client.ChatLand
             await context.SetFillStyleAsync("#FFFFFF");
 
 
-            await context.FillTextAsync("Blazor WebAssembly + HTML Canvas", 10, 30);
+            await context.FillTextAsync("Meta EShop", 10, 30);
             await context.SetFontAsync("16px consolas");
             await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
             await context.SetStrokeStyleAsync("#FFFFFF");

@@ -18,10 +18,13 @@ namespace BlazorChatApp.Client.ChatLand
     public class ChatLand : GameContext
     {
         //private GameObject _chatLandGame;
+        private string MyID {get;set; }
 
         private readonly SceneGraph _sceneGraph;
 
         private AnimationCollection _animationCollection;
+
+        public ChatField ChatField {get;set; }
 
         private Canvas2DContext _context { get;set; }
         public DateTime LastRender { get;set; }
@@ -40,13 +43,17 @@ namespace BlazorChatApp.Client.ChatLand
             
             var chatLandGame = new ChatLand(canvasContext, animationCollection);
 
-            var chatField = new GameObject();
+            var chatObj = new GameObject();
 
-            chatField.Components.Add(new ChatField(chatField));
-            chatField.Components.Get<ChatField>().resource = resource;
+            var chatField = new ChatField(chatObj);
 
-            chatLandGame._sceneGraph.Root.AddChild(chatField);
+            chatObj.Components.Add(chatField);
 
+            chatObj.Components.Get<ChatField>().resource = resource;
+
+            chatLandGame._sceneGraph.Root.AddChild(chatObj);
+
+            chatLandGame.ChatField = chatField;
 
             return chatLandGame;
         }
@@ -54,6 +61,8 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void AddUser(string id, string name, double posx,double posy, bool isMe)
         {
+            if(isMe) MyID = id;
+
             var warrior = new GameObject();
             var animation = _animationCollection.GetAnimation("Idle");            
 
@@ -118,9 +127,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         public StoreLink CollisionCheck(double x, double y)
         {
-            //var chatField =_chatLandGame.Components.Get<ChatField>();
-            //return chatField.CollisionCheck(x, y);
-            return null;
+            return ChatField.CollisionCheck(x, y);
         }
 
         private void InitAnimationController(AnimationCollection animationCollection, GameObject warrior)

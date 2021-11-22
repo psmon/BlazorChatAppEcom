@@ -45,8 +45,10 @@
             if (!window.game.canvas)
                 return;
 
-            game.canvas.width = window.innerWidth;
-            game.canvas.height = window.innerHeight;
+            //game.canvas.width = window.innerWidth;
+            //game.canvas.height = window.innerHeight;
+            game.canvas.width = 800;
+            game.canvas.height = 600;
 
             game.instance.invokeMethodAsync('OnResize', game.canvas.width, game.canvas.height);
         }
