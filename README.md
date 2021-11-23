@@ -18,6 +18,10 @@ Blazor + SigralR + Actor(Akka.net)를 이용한 그래픽 채팅앱입니다.
 
 ## 로컬빌드
 
+### OnlyBuild
+	docker-compose build  -
+
+### Build and UP
 	docker-compose up --build
 
 	http://localhost:4080
