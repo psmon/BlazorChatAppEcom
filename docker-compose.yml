@@ -9,10 +9,3 @@ services:
       dockerfile: BlazorChatApp/Server/Dockerfile
     ports:
       - 4080:80      
-  blazorClient:
-    image: registry.webnori.com/blazor-chatapp-client:dev
-    build:
-      context: .
-      dockerfile: BlazorChatApp/Client/Dockerfile
-    ports:
-      - 5080:80      
