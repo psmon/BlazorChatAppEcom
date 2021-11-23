@@ -1,4 +1,4 @@
-﻿@page "/chatroom"
+﻿@page "/metaroom"
 @using Blazor.Extensions
 @using Blazor.Extensions.Canvas
 @using Blazor.Extensions.Canvas.Canvas2D
@@ -19,12 +19,9 @@
 
 <Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
 
-<!--
 <p>MyName: @Name , RoomName : @RoomName , 채팅창에 방향키누르면 움직입니다. </p>
 <input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
 <h6>@KeyPressed </h6>
-<h6>@EventInfo</h6>
--->
 
 <div id="canvasContainer" style="position: fixed; width: 800px; height: 600px" >
     <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />

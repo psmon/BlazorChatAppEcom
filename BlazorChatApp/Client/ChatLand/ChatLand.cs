@@ -121,8 +121,8 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void ChatMessage(ChatMessage chatMessage)
         {
-            //var chatField =_chatLandGame.Components.Get<ChatField>();
-            //chatField.ChatMessage(chatMessage);
+            var characterBrain = _sceneGraph.Root.FindById<CharacterBrain>(chatMessage.From.Id);
+            characterBrain.OnChatMessage(chatMessage.Message);
         }
 
         public StoreLink CollisionCheck(double x, double y)

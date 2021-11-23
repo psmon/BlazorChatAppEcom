@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
+
+using Blazor.Extensions.Canvas.Canvas2D;
+
 using BlazorChatApp.Client.Core;
 using BlazorChatApp.Client.Core.Assets;
 using BlazorChatApp.Client.Core.Components;
@@ -9,9 +12,15 @@ using BlazorChatApp.Shared;
 
 namespace BlazorChatApp.Client.ChatLand
 {
-    public class CharacterBrain : BaseComponent
+    public class CharacterBrain : BaseComponent, IRenderable
     {
+        static public int SeqNo = 1;
+
         private readonly TransformComponent _transform;
+        public string Name{ get;set; }
+        public string ChatMessage{ get;set; }
+
+        private int ChatViewTime { get;set; } = 60*10;
 
         private Transform _goal_transform = Transform.Identity();        
 
@@ -34,6 +43,10 @@ namespace BlazorChatApp.Client.ChatLand
 
         public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id) : base(owner)
         {
+            SeqNo++;
+
+            Name = $"Player:{SeqNo}";
+
             _isMe = isMe;
 
             _queue= new Queue<UpdateUserPos>();
@@ -53,6 +66,12 @@ namespace BlazorChatApp.Client.ChatLand
         public void OnMoveKey(UpdateUserPos updateUserPos)
         {
             _queue.Enqueue(updateUserPos);
+        }
+
+        public void OnChatMessage(string message)
+        {
+            ChatViewTime = 60*10;
+            ChatMessage = message;
         }
 
         public override async ValueTask Update(GameContext game)
@@ -183,6 +202,28 @@ namespace BlazorChatApp.Client.ChatLand
             _transform.Local.Position += acc;
 
             _animationController.SetFloat("speed", speed);
+        }
+
+        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        {
+            string NameText = Name;
+
+            if(!string.IsNullOrEmpty(ChatMessage))
+            {
+                NameText = NameText + "-" + ChatMessage;
+                ChatViewTime--;
+            }
+
+            if(ChatViewTime<0)
+            {
+                ChatMessage = string.Empty;
+            }
+
+            await context.SaveAsync();
+            await context.SetFontAsync("12px ¹ÙÅÁÃ¼");
+            await context.SetFillStyleAsync("White");
+            await context.FillTextAsync(NameText, _transform.Local.Position.X + 50, _transform.Local.Position.Y + 50);
+            await context.RestoreAsync();                        
         }
     }
 }

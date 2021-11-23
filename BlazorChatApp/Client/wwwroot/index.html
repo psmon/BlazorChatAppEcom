@@ -66,27 +66,28 @@
             };
 
             if (window.game.canvas) {
-                window.game.canvas.onmousemove = (e) => {
-                    game.instance.invokeMethodAsync('OnMouseMove', e.clientX, e.clientY);
-                };
-                window.game.canvas.onmousedown = (e) => {
-                    game.instance.invokeMethodAsync('OnMouseDown', e.button);
-                };
-                window.game.canvas.onmouseup = (e) => {
-                    game.instance.invokeMethodAsync('OnMouseUp', e.button);
-                };
 
-                window.game.canvas.onkeydown = (e) => {
-                    game.instance.invokeMethodAsync('OnKeyDown', e.keyCode);
-                };
-                window.game.canvas.onkeyup = (e) => {
-                    game.instance.invokeMethodAsync('OnKeyUp', e.keyCode);
-                };
-                window.game.canvas.onblur = (e) => {
-                    window.game.canvas.focus();
-                };
-                window.game.canvas.tabIndex = 0;
-                window.game.canvas.focus();
+                //window.game.canvas.onmousemove = (e) => {
+                //    game.instance.invokeMethodAsync('OnMouseMove', e.clientX, e.clientY);
+                //};
+                //window.game.canvas.onmousedown = (e) => {
+                //    game.instance.invokeMethodAsync('OnMouseDown', e.button);
+                //};
+                //window.game.canvas.onmouseup = (e) => {
+                //    game.instance.invokeMethodAsync('OnMouseUp', e.button);
+                //};
+
+                //window.game.canvas.onkeydown = (e) => {
+                //    game.instance.invokeMethodAsync('OnKeyDown', e.keyCode);
+                //};
+                //window.game.canvas.onkeyup = (e) => {
+                //    game.instance.invokeMethodAsync('OnKeyUp', e.keyCode);
+                //};
+                //window.game.canvas.onblur = (e) => {
+                //    window.game.canvas.focus();
+                //};
+                //window.game.canvas.tabIndex = 0;
+                //window.game.canvas.focus();
             }
 
             window.addEventListener("resize", onResize);
