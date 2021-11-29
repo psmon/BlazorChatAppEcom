@@ -1,12 +1,11 @@
-using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
+
+using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
+using Microsoft.Extensions.DependencyInjection;
+
+using Smart.Blazor;
 
 
 namespace BlazorChatApp.Client
@@ -21,6 +20,8 @@ namespace BlazorChatApp.Client
         var serverHost = string.IsNullOrEmpty(builder.Configuration["SERVER_HOST"]) ? builder.HostEnvironment.BaseAddress : builder.Configuration["SERVER_HOST"];
 
         //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
+
+        builder.Services.AddSmart();
 
         builder.Services.AddTransient(sp => new HttpClient { BaseAddress = new Uri(serverHost) });
                     

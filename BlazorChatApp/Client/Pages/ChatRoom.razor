@@ -17,114 +17,75 @@
 @inject IJSRuntime JsRuntime
 
 <style>
-* {
-  box-sizing: border-box;
-}
+    smart-card,
+    smart-card:hover {
+        box-shadow: unset;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
 
-body {
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-/* Float four columns side by side */
-.column {
-  float: left;
-  width: 25%;
-  padding: 0 10px;
-}
-
-/* Remove extra left and right margins, due to padding */
-.row {margin: 0 -5px;}
-
-/* Clear floats after the columns */
-.row:after {
-  content: "";
-  display: table;
-  clear: both;
-}
-
-
-/* Style the counter cards */
-.card {
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-  padding: 16px;
-  text-align: center;
-  background-color: #f1f1f1;
-}
-  
-
-/* DivTable.com */
-.divTable{
-	display: table;
-	width: 100%;
-}
-.divTableRow {
-	display: table-row;
-}
-.divTableHeading {
-	background-color: #EEE;
-	display: table-header-group;
-}
-.divTableCell, .divTableHead {
-	border: 1px solid #999999;
-	display: table-cell;
-	padding: 3px 10px;
-}
-.divTableHeading {
-	background-color: #EEE;
-	display: table-header-group;
-	font-weight: bold;
-}
-.divTableFoot {
-	background-color: #EEE;
-	display: table-footer-group;
-	font-weight: bold;
-}
-.divTableBody {
-	display: table-row-group;
-}
 </style>
 
 <Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
 
-<div class="divTable">
-<div class="divTableBody">
-<div class="divTableRow">
-<div class="divTableCell">
 
-<p>MyName: @Name , RoomName : @RoomName</p>
-<input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
-<h6>@KeyPressed </h6>
-<div id="canvasContainer" style="width: 800px; height: 600px" >
-    <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
-    <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
-    <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
-</div>
+<Splitter style="width:100%;height:600px">
 
-</div>
-<div class="divTableCell" style="white-space: nowrap; OVERFLOW-Y:auto; width:100%; height:600px;">
-@if (searchResult != null)
-{    
-    @if (@visible)
-    {
-        <h6>추천 쇼핑아이템</h6>
-<div class="row">
-        @foreach (var shopItem in searchResult.list)        
-        {   
-  <div class="column">
-    <div class="card">
-      <img src="@shopItem.imageUrl1" class="foto" style="width:120px;height:80px;">   
-        <h4><b>@shopItem.mallName</b></h4> 
-        <p>@shopItem.nameKr</p> 
-    </div>
-  </div>
-        }
-</div>
-    }
-}
-</div>
-</div>
-</div>
-</div>
+		<SplitterItem Collapsible="false" Size="200">
+            <div style="width: 200px; height: 600px">
+                <p>MyName: @Name , RoomName : @RoomName</p>
+                <input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
+                <h6>@KeyPressed </h6>
+            </div>
+        </SplitterItem>
+
+		<SplitterItem Collapsible="true" Size="800">
+            <div id="canvasContainer" style="width: 800px; height: 600px" >
+                <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
+                <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
+                <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
+            </div>
+        </SplitterItem>
+
+		<SplitterItem @ref="productView" Collapsible="false" Size="500">
+            @if(products != null)
+            {
+                <div id="cardsView" class="container">
+                    <div class="row">
+                        <div class="col-12 mb-3"><h4>Cards</h4></div>
+                    </div>
+                @foreach (var product in products)
+                {
+                    <div class="row">
+                        <div class="col-lg-4 mb-5">
+                            <Card Class="h-200">
+                                <div class="card h-100 shadow-3 hover-shadow-6">
+                                    <div class="card-body">
+                                        <div class="img-as-background h-50">
+                                            <img src=@product.imageUrl1 />
+                                        </div>
+                                        <h4>@product.mallName</h4>
+                                        <p>
+                                            @product.nameKr - @product.price
+                                        </p>
+                                        <a href=@product.urlPc>link</a>                                    
+                                    </div>
+                                </div>
+                            </Card>
+                        </div>
+                    </div>
+                }
+                </div>
+            }
+            
+
+            
+        </SplitterItem>
+
+
+</Splitter>
+
 
 
 @code {
@@ -143,16 +104,33 @@ body {
 
     private ChatLand _chatLand;
     //Product
-    string TextValue { get; set; }    
+    string TextValue { get; set; }
+    
     private SearchResult searchResult;
+
+    private List<SearchProduct> products;
 
     private ShopItem[] shopItems;
 
     private bool visible = false;
 
     bool mandatory = true;
-    
-    DateTime lastPopupTime = DateTime.Now;
+
+    private Random rng = new Random();
+
+    private SplitterItem productView;
+
+    private void UpdateProcutView()
+    {
+        products = new List<SearchProduct>();
+
+        var suffleProduct = searchResult.list.OrderBy(a => rng.Next()).ToList();
+        foreach(var item in suffleProduct.Take(10))
+        {
+            products.Add(item);
+        }
+        productView.StateHasChanged();
+    }
 
     protected override async Task OnInitializedAsync()
     {
@@ -212,19 +190,12 @@ body {
                 var linkinfo = _chatLand.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
                 if (linkinfo != null)
                 {
-                    TimeSpan offset = DateTime.Now - lastPopupTime;
-                    if(offset.TotalSeconds > 5)
-                    {
-                        
-                    }                    
-                    visible = true;
-                    lastPopupTime = DateTime.Now;
+                    UpdateProcutView();
                     StateHasChanged();
                 }
                 else
                 {
-                    visible = false;
-                    StateHasChanged();
+                    products = new List<SearchProduct>();
                 }
             }
             _chatLand.UpdateUserPos(userPos);
@@ -359,7 +330,10 @@ body {
             if (!string.IsNullOrWhiteSpace(ChatMessageText))
             {   
                 EventInfo = ChatMessageText;
-                await SendChatMessage(ChatMessageText);
+                await SendChatMessage(ChatMessageText);                 
+                ChatMessageText = "";
+                await Task.Delay(1); //Magic!
+                StateHasChanged();                
             }
             break;
         }
@@ -384,13 +358,6 @@ body {
             case "ArrowRight":
             await KeyRight();
             break;
-            case "Enter":
-            if (!string.IsNullOrWhiteSpace(ChatMessageText))
-            {   
-                EventInfo = ChatMessageText;
-                await SendChatMessage(ChatMessageText);
-            }
-            break;
         }
     }
 
@@ -403,6 +370,9 @@ body {
         };
         await hubConnection.SendAsync("ChatMessage", sendChat);
         ChatMessageText = string.Empty;
+
+        StateHasChanged();
+
     }
 
     protected async Task KeyUp()

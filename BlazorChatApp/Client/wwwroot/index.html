@@ -9,6 +9,9 @@
     <link href="css/bootstrap/bootstrap.min.css" rel="stylesheet" />
     <link href="css/app.css" rel="stylesheet" />
     <link href="BlazorChatApp.Client.styles.css" rel="stylesheet" />
+    <link href="_content/Smart.Blazor/css/smart.default.css" rel="stylesheet" />
+    <script src="_content/Smart.Blazor/js/smart.blazor.js"></script>
+    <script src="_content/Smart.Blazor/js/smart.elements.js"></script>
 </head>
 
 <body>
@@ -21,6 +24,7 @@
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
     <script src="_content/Blazor.Extensions.Canvas/blazor.extensions.canvas.js"></script>
+
     <script>
         const FRAMES_PER_SECOND = 60;  // Valid values are 60,30,20,15,10...
         // set the mim time to render the next frame
@@ -30,13 +34,13 @@
 
         function gameLoop(timeStamp) {
 
-            if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early                
+            if (timeStamp - lastFrameTime < FRAME_MIN_TIME) { //skip the frame if the call is too early
                 window.requestAnimationFrame(gameLoop);
                 return; // return as there is nothing to do
             }
             lastFrameTime = timeStamp; // remember the time of the rendered frame
 
-            // render the frame            
+            // render the frame
             window.requestAnimationFrame(gameLoop);
             game.instance.invokeMethodAsync('GameLoop', timeStamp);
         }
@@ -77,17 +81,19 @@
                 //    game.instance.invokeMethodAsync('OnMouseUp', e.button);
                 //};
 
-                //window.game.canvas.onkeydown = (e) => {
-                //    game.instance.invokeMethodAsync('OnKeyDown', e.keyCode);
-                //};
-                //window.game.canvas.onkeyup = (e) => {
-                //    game.instance.invokeMethodAsync('OnKeyUp', e.keyCode);
-                //};
-                //window.game.canvas.onblur = (e) => {
-                //    window.game.canvas.focus();
-                //};
-                //window.game.canvas.tabIndex = 0;
-                //window.game.canvas.focus();
+                window.game.canvas.onkeydown = (e) => {
+                    game.instance.invokeMethodAsync('OnKeyDown', e.keyCode);
+                };
+                window.game.canvas.onkeyup = (e) => {
+                    game.instance.invokeMethodAsync('OnKeyUp', e.keyCode);
+                };
+
+                window.game.canvas.onblur = (e) => {
+                    //window.game.canvas.focus();
+                };
+
+                window.game.canvas.tabIndex = 0;
+                window.game.canvas.focus();
             }
 
             window.addEventListener("resize", onResize);
