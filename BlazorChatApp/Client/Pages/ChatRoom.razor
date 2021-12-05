@@ -30,21 +30,21 @@
 <Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
 
 
-<Splitter style="width:100%;height:600px">
-
-		<SplitterItem Collapsible="false" Size="200">
-            <div style="width: 200px; height: 600px">
-                <p>MyName: @Name , RoomName : @RoomName</p>
-                <input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
-                <h6>@KeyPressed </h6>
-            </div>
-        </SplitterItem>
+<Splitter style="width:100%;height:650px">
 
 		<SplitterItem Collapsible="true" Size="800">
             <div id="canvasContainer" style="width: 800px; height: 600px" >
                 <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
                 <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
                 <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
+            </div>
+        </SplitterItem>
+
+		<SplitterItem Collapsible="false" Size="200">
+            <div style="width: 200px; height: 600px">
+                <p>MyName: @Name , RoomName : @RoomName</p>
+                <input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
+                <h6>@KeyPressed </h6>
             </div>
         </SplitterItem>
 
