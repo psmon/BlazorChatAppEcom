@@ -14,6 +14,9 @@ Blazor + SigralR + Actor(Akka.net)를 이용한 그래픽 채팅앱입니다.
 - https://www.davidguida.net/blazor-and-2d-game-development-part-1-intro/
 - https://luizmelo.itch.io/medieval-warrior-pack-2
 
+CSS UX :
+- https://www.htmlelements.com/blazor/
+
 맵툴:
 - https://www.mapeditor.org/
 - https://rpg.hamsterrepublic.com/ohrrpgce/Free_Tilemaps

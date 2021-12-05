@@ -25,31 +25,57 @@
         padding: 0;
     }
 
+	.content.px-4 {
+		height: calc(100% - 60px);
+	}
+
 </style>
+
+<link href="css/site.css" rel="stylesheet">
 
 <Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
 
+<div id="canvasContainer" style="width: 800px; height: 600px; position: absolute;" >
+    <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
+    <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
+    <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
+</div>
 
-<Splitter style="width:100%;height:650px">
-
-		<SplitterItem Collapsible="true" Size="800">
-            <div id="canvasContainer" style="width: 800px; height: 600px" >
-                <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
-                <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
-                <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
+<div style="width:100%; height:600px; overflow:auto">
+<table>
+      <tr>
+        <th>
+        <div id="canvasContainerEx" style="width: 800px; height: 600px;" >            
+        </div>
+        </th>
+        <th>
+            <div id="scrollbox" style="width: 300px;">
+                @foreach (var item in _messages)
+                {
+                    @if (item.IsNotice)
+                    {
+                        <div class="alert alert-info">@item.Body</div>
+                    }
+                    else
+                    {
+                        <div class="@item.CSS">
+                            <div class="user">@item.Username</div>
+                            <div class="msg">@item.Body</div>
+                        </div>
+                    }
+                }
+                <hr />
+                <input type="text" class="input-lg" placeholder="enter your comment"  @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText"></input>
             </div>
-        </SplitterItem>
 
-		<SplitterItem Collapsible="false" Size="200">
-            <div style="width: 200px; height: 600px">
-                <p>MyName: @Name , RoomName : @RoomName</p>
-                <input type="text" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText" />
-                <h6>@KeyPressed </h6>
-            </div>
-        </SplitterItem>
+        </th>        
+      </tr>
+      
+</table>
+</div>
 
-		<SplitterItem @ref="productView" Collapsible="false" Size="500">
-            @if(products != null)
+<Window IsOpened="@opened" label="상품추천">
+            @if(products.Count > 0)
             {
                 <div id="cardsView" class="container">
                     <div class="row">
@@ -59,10 +85,10 @@
                 {
                     <div class="row">
                         <div class="col-lg-4 mb-5">
-                            <Card Class="h-200">
+                            <Card Class="h-100">
                                 <div class="card h-100 shadow-3 hover-shadow-6">
                                     <div class="card-body">
-                                        <div class="img-as-background h-50">
+                                        <div class="img-as-background h-200 mb-3">
                                             <img src=@product.imageUrl1 />
                                         </div>
                                         <h4>@product.mallName</h4>
@@ -78,17 +104,12 @@
                 }
                 </div>
             }
-            
-
-            
-        </SplitterItem>
-
-
-</Splitter>
-
-
+</Window>
 
 @code {
+
+    private bool opened = false;
+
     //Game
     Spritesheet _spritesheet;
 
@@ -108,7 +129,7 @@
     
     private SearchResult searchResult;
 
-    private List<SearchProduct> products;
+    private List<SearchProduct> products = new List<SearchProduct>();
 
     private ShopItem[] shopItems;
 
@@ -117,19 +138,35 @@
     bool mandatory = true;
 
     private Random rng = new Random();
+    
 
-    private SplitterItem productView;
+    //Chat
+    // flag to indicate chat status
+    private bool _isChatting = false;
+
+    // name of the user who will be chatting
+    private string _username;
+
+    // on-screen message
+    private string _message;
+
+    // new message input
+    private string _newMessage;
+
+    // list of messages in chat
+    private List<Message> _messages = new List<Message>();    
 
     private void UpdateProcutView()
     {
-        products = new List<SearchProduct>();
-
+        products.Clear();
         var suffleProduct = searchResult.list.OrderBy(a => rng.Next()).ToList();
         foreach(var item in suffleProduct.Take(10))
         {
             products.Add(item);
         }
-        productView.StateHasChanged();
+
+        opened = true;
+        StateHasChanged();
     }
 
     protected override async Task OnInitializedAsync()
@@ -166,9 +203,9 @@
             {
                 foreach(var pos in updateUserPos)
                 {
-                    bool isMe = pos.Id == LoginId ? true : false;
+                    bool isMine = pos.Id == LoginId ? true : false;
 
-                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMe);                        
+                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine);                        
                 }
             }
         });
@@ -176,8 +213,15 @@
         //ChatMessage
         hubConnection.On<ChatMessage>("OnChatMessage", (chatMessage) =>
         {
+            bool isMine = chatMessage.From.Id == LoginId ? true : false;
+
+            _messages.Add(new Message(chatMessage.From.Name, chatMessage.Message, isMine));
+
             Console.WriteLine($"WS - OnChatMessage");
             _chatLand.ChatMessage(chatMessage);
+
+            // Inform blazor the UI needs updating            
+            StateHasChanged();
         });
 
 
@@ -195,7 +239,8 @@
                 }
                 else
                 {
-                    products = new List<SearchProduct>();
+                    products.Clear();
+                    opened = false;                    
                 }
             }
             _chatLand.UpdateUserPos(userPos);
@@ -331,8 +376,9 @@
             {   
                 EventInfo = ChatMessageText;
                 await SendChatMessage(ChatMessageText);                 
-                ChatMessageText = "";
+                
                 await Task.Delay(1); //Magic!
+                ChatMessageText = "";
                 StateHasChanged();                
             }
             break;
@@ -429,6 +475,24 @@
 
             await hubConnection.DisposeAsync();
         }
+    }
+
+    private class Message
+    {
+        public Message(string username, string body, bool mine)
+        {
+            Username = username;
+            Body = body;
+            Mine = mine;
+        }
+
+        public string Username { get; set; }
+        public string Body { get; set; }
+        public bool Mine { get; set; }
+
+        public bool IsNotice => Body.StartsWith("[Notice]");
+
+        public string CSS => Mine ? "sent" : "received";
     }
 
 }

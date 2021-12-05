@@ -30,7 +30,6 @@
         
     }
 
-
     public class ChatMessage
     { 
         public UserInfo From { get; set; }
