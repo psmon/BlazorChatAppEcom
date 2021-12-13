@@ -392,7 +392,11 @@
     {
         ChatMessage sendChat = new ChatMessage()
         {
-            From = new UserInfo(){ Id=LoginId },
+            From = new UserInfo()
+            { 
+                Id=LoginId ,
+                Name = Name
+            },
             Message = chatMessage
         };
         await hubConnection.SendAsync("ChatMessage", sendChat);

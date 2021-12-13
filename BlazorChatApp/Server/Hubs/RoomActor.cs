@@ -76,7 +76,7 @@ namespace BlazorChatApp.Server.Hubs
             });
 
             Receive<SyncRoom>(async cmd => {           
-                userAutoNo++;
+                //userAutoNo++;
                 string jsonString = JsonSerializer.Serialize(cmd);
                 log.Info("Received SyncRoom message: {0}", jsonString);
 
@@ -96,7 +96,7 @@ namespace BlazorChatApp.Server.Hubs
             });
 
             Receive<ChatMessage>(async cmd => {           
-                userAutoNo++;
+                //userAutoNo++;
                 string jsonString = JsonSerializer.Serialize(cmd);
                 log.Info("Received ChatMessage message: {0}", jsonString);
 
