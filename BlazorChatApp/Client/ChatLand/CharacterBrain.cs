@@ -14,8 +14,6 @@ namespace BlazorChatApp.Client.ChatLand
 {
     public class CharacterBrain : BaseComponent, IRenderable
     {
-        static public int SeqNo = 1;
-
         private readonly TransformComponent _transform;
         public string Name{ get;set; }
         public string ChatMessage{ get;set; }
@@ -27,13 +25,9 @@ namespace BlazorChatApp.Client.ChatLand
         private readonly AnimationController _animationController;
         private readonly AnimatedSpriteRenderComponent _renderComponent;
         
-        private const float MaxSpeed = 0.25f;
+        private const float MaxSpeed = 0.25f;           
 
-        private const float StopSpeed = 0.55f;        
-
-        private bool _lastMirror =false;
-
-        private bool _isMe = false;
+        private bool _lastMirror =false;        
 
         private Queue<UpdateUserPos> _queue;
 
@@ -41,13 +35,9 @@ namespace BlazorChatApp.Client.ChatLand
 
         private int _keyTime = KeySpeed;
 
-        public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id) : base(owner)
+        public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id, string name) : base(owner)
         {
-            SeqNo++;
-
-            Name = $"Player:{SeqNo}";
-
-            _isMe = isMe;
+            Name = name;
 
             _queue= new Queue<UpdateUserPos>();
             
@@ -220,7 +210,7 @@ namespace BlazorChatApp.Client.ChatLand
             }
 
             await context.SaveAsync();
-            await context.SetFontAsync("12px πŸ≈¡√º");
+            await context.SetFontAsync("14px πŸ≈¡√º");            
             await context.SetFillStyleAsync("White");
             await context.FillTextAsync(NameText, _transform.Local.Position.X + 50, _transform.Local.Position.Y + 50);
             await context.RestoreAsync();                        

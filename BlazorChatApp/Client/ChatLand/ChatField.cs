@@ -27,8 +27,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         public Dictionary<string,ElementReference> resource {get;set; }
 
-        public readonly List<StoreLink> storeLinks= new List<StoreLink>();
-        public readonly List<Ball> Balls = new List<Ball>();
+        public readonly List<StoreLink> storeLinks= new List<StoreLink>();        
         public double Width { get; private set; } = 800;
         public double Height { get; private set; } = 600;
 
@@ -97,13 +96,6 @@ namespace BlazorChatApp.Client.ChatLand
         public void Resize(double width, double height) =>
             (Width, Height) = (width, height);
 
-        public Task StepForward()
-        {            
-            foreach (Ball ball in Balls)
-                ball.StepForward();
-
-            return Task.CompletedTask;
-        }
 
         public void SyncPos()
         {            
@@ -123,55 +115,11 @@ namespace BlazorChatApp.Client.ChatLand
         private string RandomColor(Random rand) => 
             string.Format("#{0:X6}", rand.Next(0xFFFFFF));
 
-        public void AddUser(string id, string name, double posx,double posy)
-        {
-            double minSpeed = 1.2;
-            double maxSpeed = .5;
-            double radius = 10;
-            Random rand = new Random();
 
-            var user = Balls.FindAll(x => x.Id == id);
-            if(user.Count==0)
-            {
-                Balls.Add(
-                    new Ball(id,name,
-                        x: posx,
-                        y: posy,
-                        xVel: minSpeed,
-                        yVel: minSpeed,
-                        radius: radius,
-                        color: RandomColor(rand)
-                    )
-                );
-            }
-        }
-
-        public void RemoveUser(string id)
-        {
-            Balls.RemoveAll(b => b.Id == id);
-        }
-
-        public void UpdateUserPos(UpdateUserPos updateUserPos)
-        {
-            var ball = Balls.FirstOrDefault(f=>f.Id.Equals(updateUserPos.Id));
-            if(ball!=null)
-            {
-                ball.MoveForward(updateUserPos.AbsPosX,updateUserPos.AbsPosY);
-            }
-        }
-
-        public void ChatMessage(ChatMessage chatMessage)
-        {
-            var ball = Balls.FirstOrDefault(f=>f.Id.Equals(chatMessage.From.Id));
-            if(ball!=null)
-            {
-                ball.AddChatMessage(chatMessage);
-            }
-        }
 
         public async override ValueTask Update(GameContext game)
         {
-            await StepForward();
+            //await StepForward();
         }
 
         public async ValueTask Render(GameContext game, Canvas2DContext context)
@@ -203,18 +151,7 @@ namespace BlazorChatApp.Client.ChatLand
 
             await context.SetFillStyleAsync("White");
             await context.SetStrokeStyleAsync("#FFFFFF");
-            foreach (var ball in Balls)
-            {
-                if (!string.IsNullOrEmpty(ball.ChatMessage))
-                {
-                    await context.FillTextAsync($"{ball.Name} - {ball.ChatMessage}", ball.X -10, ball.Y -10);
-                }
-                else
-                {
-                    await context.FillTextAsync($"{ball.Name} - {(int)ball.X},{(int)ball.Y}", ball.X -10, ball.Y -10);
-                }
-                await context.DrawImageAsync(resource["img-char1"], ball.X,ball.Y,80,80);                
-            }
+
         }
     }
 }

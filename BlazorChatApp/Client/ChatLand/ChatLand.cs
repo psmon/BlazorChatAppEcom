@@ -78,7 +78,7 @@ namespace BlazorChatApp.Client.ChatLand
 
             InitAnimationController(_animationCollection, warrior);
 
-            var character = new CharacterBrain(_animationCollection, warrior ,isMe , id);
+            var character = new CharacterBrain(_animationCollection, warrior ,isMe , id, name);
 
             warrior.Components.Add(character);
 
