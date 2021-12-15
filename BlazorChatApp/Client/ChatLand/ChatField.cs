@@ -35,42 +35,42 @@ namespace BlazorChatApp.Client.ChatLand
         {
             storeLinks.Add(new StoreLink()
             { 
-                Name = "아우터",
+                Name = "쇼아몰A",
                 PosX = 145,PosY=128,
                 Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "원피스",
+                Name = "쇼아몰B",
                 PosX = 105,PosY=258,
                 Link="BGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "슈즈",
+                Name = "쇼아몰C",
                 PosX = 75,PosY=378,
                 Link="CGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "모자",
+                Name = "쇼아몰D",
                 PosX = 150,PosY=378,
                 Link="DGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "가방",
+                Name = "쇼아몰E",
                 PosX = 330,PosY=378,
                 Link="EGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "F몰",
+                Name = "쇼아몰F",
                 PosX = 330,PosY=478,
                 Link="FGROUPBEST"
             });
@@ -140,13 +140,13 @@ namespace BlazorChatApp.Client.ChatLand
             await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
             await context.SetStrokeStyleAsync("#FFFFFF");
 
-            await context.SetFontAsync("12px 바탕체");
+            await context.SetFontAsync("16px 바탕체");
             await context.SetFillStyleAsync("Red");
             await context.SetStrokeStyleAsync("#DF0101");
 
             foreach(var store in storeLinks)
             {
-                await context.FillTextAsync($"{store.Name}-{store.PosX},{store.PosY}", store.PosX, store.PosY);
+                await context.FillTextAsync($"{store.Name}", store.PosX, store.PosY);
             }
 
             await context.SetFillStyleAsync("White");

@@ -16,70 +16,59 @@
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
 
-<style>
-    smart-card,
-    smart-card:hover {
-        box-shadow: unset;
-        width: 100%;
-        margin: 0;
-        padding: 0;
-    }
-
-	.content.px-4 {
-		height: calc(100% - 60px);
-	}
-
-</style>
 
 <link href="css/site.css" rel="stylesheet">
 
-<Spritesheet @ref="_spritesheet" Source = "assets/warrior.json" OnModelLoaded="@InitGame" />
+<Spritesheet @ref="_spritesheet" Source="assets/warrior.json" OnModelLoaded="@InitGame" />
 
-<div id="canvasContainer" style="width: 800px; height: 600px; position: absolute;" >
+<div id="canvasContainer" style="width: 800px; height: 600px; position: absolute;">
     <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
     <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
-    <BECanvas Width=800 Height=600  @ref="_canvas"></BECanvas>
+    <BECanvas Width=800 Height=600 @ref="_canvas"></BECanvas>
 </div>
 
 <div style="width:100%; height:600px; overflow:auto">
-<table>
-      <tr>
-        <th>
-        <div id="canvasContainerEx" style="width: 800px; height: 600px;" >            
-        </div>
-        </th>
-        <th>
-            <div id="scrollbox" style="width: 300px;">
-                @foreach (var item in _messages)
-                {
-                    @if (item.IsNotice)
-                    {
-                        <div class="alert alert-info">@item.Body</div>
-                    }
-                    else
-                    {
-                        <div class="@item.CSS">
-                            <div class="user">@item.Username</div>
-                            <div class="msg">@item.Body</div>
-                        </div>
-                    }
-                }
-                <hr />
-                <input type="text" class="input-lg" placeholder="enter your comment"  @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler"  @bind="ChatMessageText"></input>
-            </div>
 
-        </th>        
-      </tr>
-      
-</table>
+    <table>
+        <thead>
+            <tr>
+                <th><div id="canvasContainerEx" style="width: 800px; height: 600px;"></div></th>
+                <th>
+                    <div id="scrollbox" style="width: 300px;">
+                        @foreach (var item in _messages)
+                        {
+                            @if (item.IsNotice)
+                            {
+                                <div class="alert alert-info">@item.Body</div>
+                            }
+                            else
+                            {
+                                <div class="@item.CSS">
+                                    <div class="user">@item.Username</div>
+                                    <div class="msg">@item.Body</div>
+                                </div>
+                            }
+                        }
+                        <hr />
+                        <input type="text" class="input-lg" placeholder="enter your comment" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler" @bind="ChatMessageText"></input>
+                    </div>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="2">
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
-@if(dataSource.Count > 0)
+@if (dataSource.Count > 0)
 {
-    <Window IsOpened="@opened" label="상품추천">    
-        <Carousel DataSource=@dataSource></Carousel>
-    </Window>
+    <Carousel DataSource=@dataSource></Carousel>
 }
+
 
 @code {
 
@@ -88,15 +77,15 @@
     //Game
     Spritesheet _spritesheet;
 
-    private string Name{ get; set; }
-    private string RoomName{ get; set; }
+    private string Name { get; set; }
+    private string RoomName { get; set; }
     public HubConnection hubConnection { get; set; }
 
     BECanvasComponent _canvas;
     ElementReference _img_back;
-    ElementReference _img_char1;    
+    ElementReference _img_char1;
 
-    private string LoginId { get; set; }    
+    private string LoginId { get; set; }
 
     private ChatLand _chatLand;
     //Product
@@ -130,19 +119,19 @@
     private string _newMessage;
 
     // list of messages in chat
-    private List<Message> _messages = new List<Message>();    
+    private List<Message> _messages = new List<Message>();
 
     private void UpdateProcutView()
     {
         dataSource.Clear();
         var suffleProduct = searchResult.list.OrderBy(a => rng.Next()).ToList();
-        foreach(var item in suffleProduct.Take(10))
+        foreach (var item in suffleProduct.Take(10))
         {
             dataSource.Add(new
             {
                 image = item.imageUrl1,
                 label = item.mallName,
-                content = item.nameKr                
+                content = item.nameKr
             });
         }
     }
@@ -155,7 +144,7 @@
 
         LoginId = Guid.NewGuid().ToString();    //Fake Login ID
 
-        UpdateProcutView();
+        //UpdateProcutView();
 
         hubConnection = new HubConnectionBuilder()
             .WithUrl(_navigationManager.ToAbsoluteUri("/chathub"))
@@ -164,31 +153,31 @@
         hubConnection.On<RoomInfo, UserInfo, UpdateUserPos>("OnJoinRoom", (room, user, pos) =>
         {
             Console.WriteLine($"WS - OnJoinRoom");
-            if(user.Id == LoginId)
+            if (user.Id == LoginId)
             {
                 Name = user.Name;
-                RoomName = room.Name;                
+                RoomName = room.Name;
                 StateHasChanged();
             }
             else
             {
-                _chatLand.AddUser(user.Id,user.Name, pos.AbsPosX, pos.AbsPosY, false);
+                _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false);
             }
         });
 
-        hubConnection.On<UserInfo,List<UpdateUserPos>>("OnSyncRoom", (user, updateUserPos) =>
-        {
-            Console.WriteLine($"WS - OnSyncRoom");
-            if(user.Id == LoginId)
-            {
-                foreach(var pos in updateUserPos)
-                {
-                    bool isMine = pos.Id == LoginId ? true : false;
+        hubConnection.On<UserInfo, List<UpdateUserPos>>("OnSyncRoom", (user, updateUserPos) =>
+         {
+             Console.WriteLine($"WS - OnSyncRoom");
+             if (user.Id == LoginId)
+             {
+                 foreach (var pos in updateUserPos)
+                 {
+                     bool isMine = pos.Id == LoginId ? true : false;
 
-                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine);                        
-                }
-            }
-        });
+                     _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine);
+                 }
+             }
+         });
 
         //ChatMessage
         hubConnection.On<ChatMessage>("OnChatMessage", (chatMessage) =>
@@ -200,16 +189,16 @@
             Console.WriteLine($"WS - OnChatMessage");
             _chatLand.ChatMessage(chatMessage);
 
-            // Inform blazor the UI needs updating            
-            StateHasChanged();
+        // Inform blazor the UI needs updating
+        StateHasChanged();
         });
 
 
         hubConnection.On<UpdateUserPos>("OnUpdateUserPos", (userPos) =>
         {
             Console.WriteLine($"WS - OnUpdateUserPos");
-            //ME
-            if(userPos.Id == LoginId)
+        //ME
+        if (userPos.Id == LoginId)
             {
                 var linkinfo = _chatLand.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
                 if (linkinfo != null)
@@ -221,7 +210,9 @@
                 else
                 {
                     products.Clear();
-                    opened = false;                    
+                    dataSource.Clear();
+                    opened = false;
+                    StateHasChanged();
                 }
             }
             _chatLand.UpdateUserPos(userPos);
@@ -237,14 +228,14 @@
 
         JoinRoom sendMsg = new JoinRoom()
         {
-            UserInfo = new UserInfo(){Name="user", Id= LoginId},
-            RoomInfo = new RoomInfo(){Name="room1"}
+            UserInfo = new UserInfo() { Name = "user", Id = LoginId },
+            RoomInfo = new RoomInfo() { Name = "room1" }
         };
 
         SyncRoom syndMsg = new SyncRoom()
         {
-            UserInfo = new UserInfo(){Name="user", Id= LoginId},
-            RoomInfo = new RoomInfo(){Name="room1"}
+            UserInfo = new UserInfo() { Name = "user", Id = LoginId },
+            RoomInfo = new RoomInfo() { Name = "room1" }
         };
 
         await hubConnection.SendAsync("JoInRoom", sendMsg);
@@ -260,24 +251,25 @@
     {
         //_context = await _canvas.CreateCanvas2DAsync();
 
-        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));        
+        await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));
 
-        Dictionary<string,ElementReference> resource = new Dictionary<string, ElementReference>();
+        Dictionary<string, ElementReference> resource = new Dictionary<string, ElementReference>();
 
-        resource["img-char1"]= _img_char1;
-        resource["img-back"]= _img_back;
+        resource["img-char1"] = _img_char1;
+        resource["img-back"] = _img_back;
 
-        _chatLand =  await ChatLand.Create(_canvas, resource, animationCollection);
+        _chatLand = await ChatLand.Create(_canvas, resource, animationCollection);
 
         // this will make sure that the viewport is correctly initialized
-        await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));  
-        
+        await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));
+
     }
 
     [JSInvokable]
     public void OnResize(int screenWidth, int screenHeight)
     {
-        if (null == _chatLand) return;
+        if (null == _chatLand)
+            return;
 
         _chatLand.Display.Size = new Size(800, 600);
     }
@@ -285,7 +277,8 @@
     [JSInvokable]
     public async ValueTask GameLoop(float timeStamp)
     {
-        if (null == _chatLand) return;
+        if (null == _chatLand)
+            return;
 
         await _chatLand.Step();
     }
@@ -310,33 +303,33 @@
     {
         //InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Down);
 
-        if((Keys)keyCode == Keys.Left)
+        if ((Keys)keyCode == Keys.Left)
         {
             await KeyLeft();
         }
 
-        if((Keys)keyCode == Keys.Right)
+        if ((Keys)keyCode == Keys.Right)
         {
             await KeyRight();
         }
 
-        if((Keys)keyCode == Keys.Up)
+        if ((Keys)keyCode == Keys.Up)
         {
             await KeyUp();
         }
 
-        if((Keys)keyCode == Keys.Down)
+        if ((Keys)keyCode == Keys.Down)
         {
             await KeyDown();
         }
-    } 
-            
+    }
+
     [JSInvokable]
     public async ValueTask OnKeyUp(int keyCode)
     {
-        //InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Up);        
+        //InputSystem.Instance.SetKeyState((Keys)keyCode,ButtonState.States.Up);
     }
-    
+
 
     private int increaseDelta = 50;
 
@@ -354,13 +347,13 @@
         {
             case "Enter":
             if (!string.IsNullOrWhiteSpace(ChatMessageText))
-            {   
+            {
                 EventInfo = ChatMessageText;
-                await SendChatMessage(ChatMessageText);                 
-                
+                await SendChatMessage(ChatMessageText);
+
                 await Task.Delay(1); //Magic!
                 ChatMessageText = "";
-                StateHasChanged();                
+                StateHasChanged();
             }
             break;
         }
@@ -393,8 +386,8 @@
         ChatMessage sendChat = new ChatMessage()
         {
             From = new UserInfo()
-            { 
-                Id=LoginId ,
+            {
+                Id = LoginId,
                 Name = Name
             },
             Message = chatMessage
@@ -444,7 +437,7 @@
             PosY = 0,
             PosX = increaseDelta
         };
-        await hubConnection.SendAsync("UpdateUserPos", updatePos);        
+        await hubConnection.SendAsync("UpdateUserPos", updatePos);
     }
 
     public async ValueTask DisposeAsync()
@@ -453,8 +446,8 @@
         {
             LeaveRoom leaveRoom = new LeaveRoom()
             {
-                UserInfo = new UserInfo(){Name=Name, Id= LoginId},
-                RoomInfo = new RoomInfo(){Name=RoomName}                
+                UserInfo = new UserInfo() { Name = Name, Id = LoginId },
+                RoomInfo = new RoomInfo() { Name = RoomName }
             };
             await hubConnection.SendAsync("LeaveRoom", leaveRoom);
 
