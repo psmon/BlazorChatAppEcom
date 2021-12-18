@@ -4,7 +4,7 @@
 @inject HttpClient Http
 @inject ILogger<MultiSpritesheet> Logger
 
-@foreach (var animation in _animations.Values)
+@foreach (var animation in _animations)
 {
     <img hidden src="data:image/png;base64,@animation.ImageData" @ref="animation.ImageRef" data-name="@animation.Name" />
 }
@@ -16,8 +16,7 @@
 
     private Dictionary<string, AnimationCollection> _model;
 
-    private readonly Dictionary<string, AnimationCollection.Animation> _animations = new Dictionary<string, AnimationCollection.Animation>();
-
+    private readonly IList<AnimationCollection.Animation> _animations = new List<AnimationCollection.Animation>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -40,16 +39,19 @@
                     var frameSize = animationData.frameSize.ToSize();
                     var elementRef = new ElementReference(Guid.NewGuid().ToString());
 
-                    Logger.LogInformation($"loading animation {animationData.name}, frame size: {frameSize}, image size: {imageSize}");
+                    Logger.LogInformation($"loading animation {data.name}-{animationData.name}, frame size: {frameSize}, image size: {imageSize}");
 
-                    var animation = new AnimationCollection.Animation(animationData.name, animationData.fps, frameSize, animationData.framesCount, elementRef, animationData.imageData, imageSize, animationCollection);
+                    var animation = new AnimationCollection.Animation( $"{data.name}-{animationData.name}", animationData.fps, frameSize, animationData.framesCount,
+                        elementRef, animationData.imageData, imageSize, animationCollection);
 
-                    _animations[data.name] = animation;
+                    _animations.Add(animation);
                 }
 
-                await this.OnModelLoaded.InvokeAsync(this._model);
             }
         }
+
+        await this.OnModelLoaded.InvokeAsync(this._model);
+
     }
 
     [Parameter]

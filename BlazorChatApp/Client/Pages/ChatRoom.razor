@@ -19,7 +19,7 @@
 
 <link href="css/site.css" rel="stylesheet">
 
-<Spritesheet @ref="_spritesheet" Source="assets/warrior2.json" OnModelLoaded="@InitGame" />
+<MultiSpritesheet @ref="_spritesheet" Source="assets/warrior.json,assets/warrior2.json" OnModelLoaded="@InitGame" />
 
 <div id="canvasContainer" style="width: 800px; height: 600px; position: absolute;">
     <img @ref="_img_back" hidden id="spritesheet" src="/img/map1.png" />
@@ -75,7 +75,7 @@
     private bool opened = false;
 
     //Game
-    Spritesheet _spritesheet;
+    MultiSpritesheet _spritesheet;
 
     private string Name { get; set; }
     private string RoomName { get; set; }
@@ -166,18 +166,18 @@
         });
 
         hubConnection.On<UserInfo, List<UpdateUserPos>>("OnSyncRoom", (user, updateUserPos) =>
-         {
-             Console.WriteLine($"WS - OnSyncRoom");
-             if (user.Id == LoginId)
-             {
-                 foreach (var pos in updateUserPos)
-                 {
-                     bool isMine = pos.Id == LoginId ? true : false;
+        {
+            Console.WriteLine($"WS - OnSyncRoom");
+            if (user.Id == LoginId)
+            {
+                foreach (var pos in updateUserPos)
+                {
+                    bool isMine = pos.Id == LoginId ? true : false;
 
-                     _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine);
-                 }
-             }
-         });
+                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine);
+                }
+            }
+        });
 
         //ChatMessage
         hubConnection.On<ChatMessage>("OnChatMessage", (chatMessage) =>
@@ -189,16 +189,16 @@
             Console.WriteLine($"WS - OnChatMessage");
             _chatLand.ChatMessage(chatMessage);
 
-        // Inform blazor the UI needs updating
-        StateHasChanged();
+            // Inform blazor the UI needs updating
+            StateHasChanged();
         });
 
 
         hubConnection.On<UpdateUserPos>("OnUpdateUserPos", (userPos) =>
         {
             Console.WriteLine($"WS - OnUpdateUserPos");
-        //ME
-        if (userPos.Id == LoginId)
+            //ME
+            if (userPos.Id == LoginId)
             {
                 var linkinfo = _chatLand.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
                 if (linkinfo != null)
@@ -247,7 +247,7 @@
 
     }
 
-    public async Task InitGame(AnimationCollection animationCollection)
+    public async Task InitGame(Dictionary<string, AnimationCollection> animationCollections)
     {
         //_context = await _canvas.CreateCanvas2DAsync();
 
@@ -258,7 +258,7 @@
         resource["img-char1"] = _img_char1;
         resource["img-back"] = _img_back;
 
-        _chatLand = await ChatLand.Create(_canvas, resource, animationCollection);
+        _chatLand = await ChatLand.Create(_canvas, resource, animationCollections);
 
         // this will make sure that the viewport is correctly initialized
         await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));

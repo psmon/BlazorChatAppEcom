@@ -22,14 +22,15 @@ namespace BlazorChatApp.Client.ChatLand
 
         private readonly SceneGraph _sceneGraph;
 
-        private AnimationCollection _animationCollection;
+        private Dictionary<string,AnimationCollection> _animationCollection;
+
 
         public ChatField ChatField {get;set; }
 
         private Canvas2DContext _context { get;set; }
         public DateTime LastRender { get;set; }
 
-        public ChatLand(Canvas2DContext context, AnimationCollection animationCollection)
+        public ChatLand(Canvas2DContext context, Dictionary<string,AnimationCollection> animationCollection)
         {            
             _context = context;
             _animationCollection = animationCollection;
@@ -37,7 +38,8 @@ namespace BlazorChatApp.Client.ChatLand
             LastRender = DateTime.Now;            
         }
 
-        public static async ValueTask<ChatLand> Create(BECanvasComponent canvas, Dictionary<string,ElementReference> resource, AnimationCollection animationCollection )
+        public static async ValueTask<ChatLand> Create(BECanvasComponent canvas, Dictionary<string,ElementReference> resource, 
+            Dictionary<string,AnimationCollection> animationCollection)
         {
             var canvasContext = await canvas.CreateCanvas2DAsync();
             
@@ -64,7 +66,23 @@ namespace BlazorChatApp.Client.ChatLand
             if(isMe) MyID = id;
 
             var warrior = new GameObject();
-            var animation = _animationCollection.GetAnimation("Idle");            
+            AnimationCollection animationCollection;
+
+            int userIdx = int.Parse(name.Split("-")[1]);
+
+            string avartarName = "";
+            if(userIdx % 2 == 0)
+            {
+                avartarName = "warrior";                
+            }
+            else
+            {
+                avartarName = "warrior2";                
+            }
+
+            animationCollection = _animationCollection[avartarName];
+
+            var animation = animationCollection.GetAnimation("Idle");            
 
             var sunTransform = new TransformComponent(warrior);            
             sunTransform.Local.Position.X=(float)posx;
@@ -76,9 +94,9 @@ namespace BlazorChatApp.Client.ChatLand
                 Animation = animation
             });
 
-            InitAnimationController(_animationCollection, warrior);
+            InitAnimationController(avartarName, animationCollection, warrior);
 
-            var character = new CharacterBrain(_animationCollection, warrior ,isMe , id, name);
+            var character = new CharacterBrain(animationCollection, warrior ,isMe , id, name);
 
             warrior.Components.Add(character);
 
@@ -130,7 +148,7 @@ namespace BlazorChatApp.Client.ChatLand
             return ChatField.CollisionCheck(x, y);
         }
 
-        private void InitAnimationController(AnimationCollection animationCollection, GameObject warrior)
+        private void InitAnimationController(string avartarName , AnimationCollection animationCollection, GameObject warrior)
         {
             var animationController = new AnimationController(warrior);
             animationController.SetFloat("speed", 0f);
@@ -139,16 +157,16 @@ namespace BlazorChatApp.Client.ChatLand
 
             warrior.Components.Add(animationController);
 
-            var idle = new AnimationState(animationCollection.GetAnimation("Idle"));
+            var idle = new AnimationState(animationCollection.GetAnimation(avartarName + "-Idle"));
             animationController.AddState(idle);
 
-            var run = new AnimationState(animationCollection.GetAnimation("Run"));
+            var run = new AnimationState(animationCollection.GetAnimation(avartarName + "-Run"));
             animationController.AddState(run);
 
-            var jump = new AnimationState(animationCollection.GetAnimation("Jump"));
+            var jump = new AnimationState(animationCollection.GetAnimation(avartarName + "-Jump"));
             animationController.AddState(jump);
 
-            var attack = new AnimationState(animationCollection.GetAnimation("Attack1"));
+            var attack = new AnimationState(animationCollection.GetAnimation(avartarName + "-Attack1"));
             animationController.AddState(attack);
 
             idle.AddTransition(run,new Func<AnimationController, bool>[]
