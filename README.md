@@ -19,6 +19,11 @@ Graphic:
 - https://swharden.com/blog/2021-01-07-blazor-canvas-animated-graphics/  
 - https://www.davidguida.net/blazor-and-2d-game-development-part-1-intro/
 - https://luizmelo.itch.io/medieval-warrior-pack-2
+- https://opengameart.org/
+
+Utils:
+- https://codebeautify.org/base64-to-image-converter
+- https://www.base64-image.de/
 
 CSS UX :
 - https://www.htmlelements.com/blazor/

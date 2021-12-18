@@ -1,0 +1,87 @@
+﻿@using System.Drawing
+@using BlazorChatApp.Client.Core.Assets
+@using Microsoft.Extensions.Logging
+@inject HttpClient Http
+@inject ILogger<MultiSpritesheet> Logger
+
+@foreach (var animation in _animations.Values)
+{
+    <img hidden src="data:image/png;base64,@animation.ImageData" @ref="animation.ImageRef" data-name="@animation.Name" />
+}
+
+@code{
+
+    [Parameter]
+    public string Source { get; set; }
+
+    private Dictionary<string, AnimationCollection> _model;
+
+    private readonly Dictionary<string, AnimationCollection.Animation> _animations = new Dictionary<string, AnimationCollection.Animation>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _model = new Dictionary<string, AnimationCollection>();
+
+        string[] SourceList = Source.Split(",");
+
+        foreach(string SingleSource in SourceList)
+        {
+            var data = await Http.GetFromJsonAsync<AnimationsFile>(SingleSource);
+
+            if (data?.Animations != null)
+            {
+                AnimationCollection animationCollection = new AnimationCollection(data.name);
+                _model[data.name] = animationCollection;
+
+                foreach (var animationData in data.Animations)
+                {
+                    var imageSize = new Size(animationData.imageMeta.width, animationData.imageMeta.height);
+                    var frameSize = animationData.frameSize.ToSize();
+                    var elementRef = new ElementReference(Guid.NewGuid().ToString());
+
+                    Logger.LogInformation($"loading animation {animationData.name}, frame size: {frameSize}, image size: {imageSize}");
+
+                    var animation = new AnimationCollection.Animation(animationData.name, animationData.fps, frameSize, animationData.framesCount, elementRef, animationData.imageData, imageSize, animationCollection);
+
+                    _animations[data.name] = animation;
+                }
+
+                await this.OnModelLoaded.InvokeAsync(this._model);
+            }
+        }
+    }
+
+    [Parameter]
+    public EventCallback<Dictionary<string, AnimationCollection>> OnModelLoaded { get; set; }
+
+    internal class AnimationsFile
+    {
+        public string name { get; set; }
+        public AnimationData[] Animations { get; set; }
+
+        internal class AnimationData
+        {
+            public string name { get; set; }
+            public int fps { get; set; }
+            public int framesCount { get; set; }
+            public FrameSize frameSize { get; set; }
+            public ImageMeta imageMeta { get; set; }
+            public string imageData { get; set; }
+
+            internal class ImageMeta
+            {
+                public int width { get; set; }
+                public int height { get; set; }
+                public string type { get; set; }
+            }
+
+            internal class FrameSize
+            {
+                public int width { get; set; }
+                public int height { get; set; }
+                public Size ToSize() => new Size(width, height);
+            }
+        }
+    }
+}
