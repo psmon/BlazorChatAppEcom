@@ -71,13 +71,28 @@ namespace BlazorChatApp.Client.ChatLand
             int userIdx = int.Parse(name.Split("-")[1]);
 
             string avartarName = "";
-            if(userIdx % 2 == 0)
+
+            int roundIdx = userIdx % 5;
+
+            if(roundIdx==0)
             {
-                avartarName = "warrior";                
+                avartarName = "warrior";
+            }
+            else if(roundIdx==1)
+            {
+                avartarName = "santa2";
+            }
+            else if(roundIdx==2)
+            {
+                avartarName = "elf1";
+            }
+            else if(roundIdx==3)
+            {
+                avartarName = "elf2";
             }
             else
             {
-                avartarName = "warrior2";                
+                avartarName = "santa1";
             }
 
             animationCollection = _animationCollection[avartarName];
@@ -163,43 +178,17 @@ namespace BlazorChatApp.Client.ChatLand
             var run = new AnimationState(animationCollection.GetAnimation(avartarName + "-Run"));
             animationController.AddState(run);
 
-            var jump = new AnimationState(animationCollection.GetAnimation(avartarName + "-Jump"));
-            animationController.AddState(jump);
-
-            var attack = new AnimationState(animationCollection.GetAnimation(avartarName + "-Attack1"));
-            animationController.AddState(attack);
-
             idle.AddTransition(run,new Func<AnimationController, bool>[]
             {
                 ctrl => ctrl.GetFloat("speed") > .1f
             });
-            idle.AddTransition(attack, new Func<AnimationController, bool>[]
-            {
-                ctrl => ctrl.GetBool("attacking")
-            });
-            idle.AddTransition(jump, new Func<AnimationController, bool>[]
-            {
-                ctrl => ctrl.GetBool("jumping")
-            });
+
 
             run.AddTransition(idle, new Func<AnimationController, bool>[]
             {
                 ctrl => ctrl.GetFloat("speed") < .1f
             });
-            run.AddTransition(attack, new Func<AnimationController, bool>[]
-            {
-                ctrl => ctrl.GetBool("attacking")
-            });
 
-            attack.AddTransition(idle, new Func<AnimationController, bool>[]
-            {
-                ctrl => !ctrl.GetBool("attacking")
-            });
-
-            jump.AddTransition(idle, new Func<AnimationController, bool>[]
-            {
-                ctrl => !ctrl.GetBool("jumping")
-            });
         }
 
         protected override async ValueTask Update()
