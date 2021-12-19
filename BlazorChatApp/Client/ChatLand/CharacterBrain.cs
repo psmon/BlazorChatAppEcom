@@ -211,7 +211,7 @@ namespace BlazorChatApp.Client.ChatLand
 
             await context.SaveAsync();
             await context.SetFontAsync("14px πŸ≈¡√º");            
-            await context.SetFillStyleAsync("White");
+            await context.SetFillStyleAsync("Blue");
             await context.FillTextAsync(NameText, _transform.Local.Position.X + 50, _transform.Local.Position.Y + 50);
             await context.RestoreAsync();                        
         }

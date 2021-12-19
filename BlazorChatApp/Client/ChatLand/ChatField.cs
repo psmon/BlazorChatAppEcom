@@ -35,43 +35,36 @@ namespace BlazorChatApp.Client.ChatLand
         {
             storeLinks.Add(new StoreLink()
             { 
-                Name = "쇼아몰",
-                PosX = 145,PosY=128,
+                Name = "상의",
+                PosX = 215,PosY=258,
                 Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "루나몰",
-                PosX = 105,PosY=258,
+                Name = "하의",
+                PosX = 85,PosY=258,
                 Link="BGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "루나톡센터",
+                Name = "슈즈",
                 PosX = 75,PosY=378,
                 Link="CGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "스마트+몰",
-                PosX = 150,PosY=378,
-                Link="DGROUPBEST"
-            });
-
-            storeLinks.Add(new StoreLink()
-            { 
-                Name = "루나A몰",
-                PosX = 330,PosY=378,
+                Name = "티셔츠",
+                PosX = 390,PosY=358,
                 Link="EGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "루나B몰",
-                PosX = 330,PosY=478,
+                Name = "아우터",
+                PosX = 300,PosY=478,
                 Link="FGROUPBEST"
             });
 
