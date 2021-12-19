@@ -76,11 +76,11 @@ namespace BlazorChatApp.Client.ChatLand
 
             if(roundIdx==0)
             {
-                avartarName = "warrior";
+                avartarName = "santa2";
             }
             else if(roundIdx==1)
             {
-                avartarName = "santa2";
+                avartarName = "warrior";
             }
             else if(roundIdx==2)
             {
