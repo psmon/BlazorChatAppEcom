@@ -36,14 +36,14 @@ namespace BlazorChatApp.Client.ChatLand
             storeLinks.Add(new StoreLink()
             { 
                 Name = "상의",
-                PosX = 215,PosY=258,
+                PosX = 215,PosY=150,
                 Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
                 Name = "하의",
-                PosX = 85,PosY=258,
+                PosX = 85,PosY=150,
                 Link="BGROUPBEST"
             });
 
@@ -57,7 +57,7 @@ namespace BlazorChatApp.Client.ChatLand
             storeLinks.Add(new StoreLink()
             { 
                 Name = "티셔츠",
-                PosX = 390,PosY=358,
+                PosX = 410,PosY=250,
                 Link="EGROUPBEST"
             });
 
@@ -72,11 +72,11 @@ namespace BlazorChatApp.Client.ChatLand
 
         public StoreLink CollisionCheck(double x, double y)
         {
-            int inDistance = 30;
+            int inDistance = 50;
             Console.WriteLine($"x==>{x} y==>{y}");
             foreach(var storeLink in storeLinks)
             {
-                var distance = Math.Sqrt((Math.Pow(storeLink.PosX-50 - x, 2) + Math.Pow(storeLink.PosY-80 - y, 2)));
+                var distance = Math.Sqrt((Math.Pow(storeLink.PosX - x, 2) + Math.Pow(storeLink.PosY - y, 2)));
                 if (distance < inDistance)
                 {
                     Console.WriteLine($"Link===>{storeLink.Link} Dist{distance}");
@@ -134,7 +134,7 @@ namespace BlazorChatApp.Client.ChatLand
             await context.SetStrokeStyleAsync("#FFFFFF");
 
             await context.SetFontAsync("16px 바탕체");
-            await context.SetFillStyleAsync("Red");
+            await context.SetFillStyleAsync("White");
             await context.SetStrokeStyleAsync("#DF0101");
 
             foreach(var store in storeLinks)

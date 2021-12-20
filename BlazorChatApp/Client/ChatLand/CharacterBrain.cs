@@ -212,7 +212,16 @@ namespace BlazorChatApp.Client.ChatLand
             await context.SaveAsync();
             await context.SetFontAsync("14px πŸ≈¡√º");            
             await context.SetFillStyleAsync("Blue");
-            await context.FillTextAsync(NameText, _transform.Local.Position.X + 50, _transform.Local.Position.Y + 50);
+            await context.FillTextAsync(Name, _transform.Local.Position.X+10, _transform.Local.Position.Y + 75);
+
+            if(!string.IsNullOrEmpty(ChatMessage))
+            {
+                //await context.SetFillStyleAsync("White");
+                //await context.FillRectAsync(_transform.Local.Position.X, _transform.Local.Position.Y - 34, 120 , 34 );
+                await context.SetFillStyleAsync("Black");
+                await context.FillTextAsync(ChatMessage, _transform.Local.Position.X+20, _transform.Local.Position.Y-2);
+            }
+
             await context.RestoreAsync();                        
         }
     }

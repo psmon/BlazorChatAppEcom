@@ -80,7 +80,7 @@ namespace BlazorChatApp.Client.ChatLand
             }
             else if(roundIdx==1)
             {
-                avartarName = "warrior";
+                avartarName = "elf2";
             }
             else if(roundIdx==2)
             {
@@ -92,7 +92,7 @@ namespace BlazorChatApp.Client.ChatLand
             }
             else
             {
-                avartarName = "santa1";
+                avartarName = "santa2";
             }
 
             animationCollection = _animationCollection[avartarName];
