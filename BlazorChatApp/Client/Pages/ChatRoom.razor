@@ -1,7 +1,5 @@
 ﻿@page "/metaroom"
 @using Blazor.Extensions
-@using Blazor.Extensions.Canvas
-@using Blazor.Extensions.Canvas.Canvas2D
 @using BlazorChatApp.Client.Core
 
 @using BlazorChatApp.Client.Core.Assets
@@ -13,9 +11,10 @@
 @using System.Drawing
 @inject HttpClient Http
 
+@using Blazor.Extensions.Canvas
+@using Blazor.Extensions.Canvas.Canvas2D
 @implements IAsyncDisposable
 @inject IJSRuntime JsRuntime
-
 
 <link href="css/site.css" rel="stylesheet">
 

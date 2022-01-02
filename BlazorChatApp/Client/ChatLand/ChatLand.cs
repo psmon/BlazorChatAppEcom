@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Numerics;
 using System.Threading.Tasks;
 
 using Blazor.Extensions;
@@ -16,8 +15,7 @@ using Microsoft.AspNetCore.Components;
 namespace BlazorChatApp.Client.ChatLand
 {
     public class ChatLand : GameContext
-    {
-        //private GameObject _chatLandGame;
+    {        
         private string MyID {get;set; }
 
         private readonly SceneGraph _sceneGraph;
@@ -111,7 +109,7 @@ namespace BlazorChatApp.Client.ChatLand
 
             InitAnimationController(avartarName, animationCollection, warrior);
 
-            var character = new CharacterBrain(animationCollection, warrior ,isMe , id, name);
+            var character = new Character(animationCollection, warrior ,isMe , id, name);
 
             warrior.Components.Add(character);
 
@@ -128,7 +126,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void UpdateUserPos(UpdateUserPos updateUserPos)
         {
-            var characterBrain = _sceneGraph.Root.FindById<CharacterBrain>(updateUserPos.Id);
+            var characterBrain = _sceneGraph.Root.FindById<Character>(updateUserPos.Id);
 
             Keys keys = Keys.Idle;
 
@@ -154,7 +152,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void ChatMessage(ChatMessage chatMessage)
         {
-            var characterBrain = _sceneGraph.Root.FindById<CharacterBrain>(chatMessage.From.Id);
+            var characterBrain = _sceneGraph.Root.FindById<Character>(chatMessage.From.Id);
             characterBrain.OnChatMessage(chatMessage.Message);
         }
 

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 using Blazor.Extensions.Canvas.Canvas2D;
 
 using BlazorChatApp.Client.Core;
 using BlazorChatApp.Client.Core.Components;
-using BlazorChatApp.Shared;
 
 using Microsoft.AspNetCore.Components;
 

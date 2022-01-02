@@ -12,7 +12,7 @@ using BlazorChatApp.Shared;
 
 namespace BlazorChatApp.Client.ChatLand
 {
-    public class CharacterBrain : BaseComponent, IRenderable
+    public class Character : BaseComponent, IRenderable
     {
         private readonly TransformComponent _transform;
         public string Name{ get;set; }
@@ -35,7 +35,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         private int _keyTime = KeySpeed;
 
-        public CharacterBrain(AnimationCollection animationCollection, GameObject owner, bool isMe, string id, string name) : base(owner)
+        public Character(AnimationCollection animationCollection, GameObject owner, bool isMe, string id, string name) : base(owner)
         {
             Name = name;
 
