@@ -33,36 +33,43 @@ namespace BlazorChatApp.Client.ChatLand
         {
             storeLinks.Add(new StoreLink()
             { 
-                Name = "상의",
-                PosX = 215,PosY=150,
+                Name = "2FA몰",
+                PosX = 0,PosY=180,
                 Link="AGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "하의",
-                PosX = 85,PosY=150,
+                Name = "2FB몰",
+                PosX = 410,PosY=180,
                 Link="BGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "슈즈",
-                PosX = 75,PosY=378,
+                Name = "2FC몰",
+                PosX = 730,PosY=180,
+                Link="FGROUPBEST"
+            });
+
+            storeLinks.Add(new StoreLink()
+            { 
+                Name = "1FA몰",
+                PosX = 0,PosY=378,
                 Link="CGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "티셔츠",
-                PosX = 410,PosY=250,
+                Name = "1FB몰",
+                PosX = 410,PosY=378,
                 Link="EGROUPBEST"
             });
 
             storeLinks.Add(new StoreLink()
             { 
-                Name = "아우터",
-                PosX = 300,PosY=478,
+                Name = "1FC몰",
+                PosX = 730,PosY=378,
                 Link="FGROUPBEST"
             });
 
@@ -70,7 +77,7 @@ namespace BlazorChatApp.Client.ChatLand
 
         public StoreLink CollisionCheck(double x, double y)
         {
-            int inDistance = 50;
+            int inDistance = 30;
             Console.WriteLine($"x==>{x} y==>{y}");
             foreach(var storeLink in storeLinks)
             {

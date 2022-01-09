@@ -57,8 +57,9 @@ namespace BlazorChatApp.Server.Hubs
                     Color=RandomColor
                 };
 
-                double posx = 552;
-                double posy = 296;
+                // Default Position
+                double posx = random.Next(300,600);
+                double posy = random.Next(400,550);
 
                 UpdateUserPos updateUserPos= new UpdateUserPos()
                 { 
