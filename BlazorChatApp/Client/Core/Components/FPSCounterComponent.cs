@@ -5,11 +5,11 @@ namespace BlazorChatApp.Client.Core.Components
 {
     public class FPSCounterComponent : BaseComponent, IRenderable
     {
-        private FPSCounterComponent(GameObject owner) : base(owner)
+        private FPSCounterComponent(SceneObject owner) : base(owner)
         {
         }
 
-        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        public async ValueTask Render(SceneContext game, Canvas2DContext context)
         {
             var fps = 1000f / game.GameTime.ElapsedMilliseconds;
 

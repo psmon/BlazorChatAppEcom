@@ -16,7 +16,7 @@ namespace BlazorChatApp.Client.Core.Components
         private readonly IDictionary<string, float> _floatParams;
         private readonly IDictionary<string, bool> _boolParams;
 
-        public AnimationController(GameObject owner) : base(owner)
+        public AnimationController(SceneObject owner) : base(owner)
         {
             _states = new List<AnimationState>();
             _animationComponent = owner.Components.Get<AnimatedSpriteRenderComponent>();
@@ -32,7 +32,7 @@ namespace BlazorChatApp.Client.Core.Components
             _states.Add(state);
         }
 
-        public override async ValueTask Update(GameContext game)
+        public override async ValueTask Update(SceneContext game)
         {
             if (null == _currentState)
             {

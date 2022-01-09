@@ -4,8 +4,8 @@ namespace BlazorChatApp.Client.Core.Components
 {
     public interface IComponent
     {
-        ValueTask Update(GameContext game);
+        ValueTask Update(SceneContext game);
 
-        GameObject Owner { get; }
+        SceneObject Owner { get; }
     }
 }

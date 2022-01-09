@@ -10,12 +10,12 @@ namespace BlazorChatApp.Client.Core.Components
     {
         private readonly TransformComponent _transform;
 
-        private SpriteRenderComponent(GameObject owner) : base(owner)
+        private SpriteRenderComponent(SceneObject owner) : base(owner)
         {
             _transform = owner.Components.Get<TransformComponent>();
         }
 
-        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        public async ValueTask Render(SceneContext game, Canvas2DContext context)
         {
             await context.SaveAsync();
 

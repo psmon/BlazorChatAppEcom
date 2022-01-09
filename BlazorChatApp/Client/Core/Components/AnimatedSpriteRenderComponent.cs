@@ -16,13 +16,13 @@ namespace BlazorChatApp.Client.Core.Components
         
         private AnimationCollection.Animation _animation;
 
-        public AnimatedSpriteRenderComponent(GameObject owner) : base(owner)
+        public AnimatedSpriteRenderComponent(SceneObject owner) : base(owner)
         {
             _transform = owner.Components.Get<TransformComponent>();
         }
 
 
-        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        public async ValueTask Render(SceneContext game, Canvas2DContext context)
         {
             if (null == Animation)
                 return;

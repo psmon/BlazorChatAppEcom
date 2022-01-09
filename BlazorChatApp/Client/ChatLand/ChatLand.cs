@@ -14,7 +14,7 @@ using Microsoft.AspNetCore.Components;
 
 namespace BlazorChatApp.Client.ChatLand
 {
-    public class ChatLand : GameContext
+    public class ChatLand : SceneContext
     {        
         private string MyID {get;set; }
 
@@ -43,7 +43,7 @@ namespace BlazorChatApp.Client.ChatLand
             
             var chatLandGame = new ChatLand(canvasContext, animationCollection);
 
-            var chatObj = new GameObject();
+            var chatObj = new SceneObject();
 
             var chatField = new ChatField(chatObj);
 
@@ -59,11 +59,11 @@ namespace BlazorChatApp.Client.ChatLand
         }
 
 
-        public void AddUser(string id, string name, double posx,double posy, bool isMe)
+        public void AddUser(string id, string name, double posx,double posy, bool isMe, Dictionary<string,ElementReference> resource)
         {
             if(isMe) MyID = id;
 
-            var warrior = new GameObject();
+            var warrior = new SceneObject();
             AnimationCollection animationCollection;
 
             int userIdx = int.Parse(name.Split("-")[1]);
@@ -111,7 +111,9 @@ namespace BlazorChatApp.Client.ChatLand
 
             var character = new Character(animationCollection, warrior ,isMe , id, name);
 
-            warrior.Components.Add(character);
+            character.resource = resource;
+
+            warrior.Components.Add(character);            
 
             warrior.HashId = id;            
 
@@ -161,7 +163,7 @@ namespace BlazorChatApp.Client.ChatLand
             return ChatField.CollisionCheck(x, y);
         }
 
-        private void InitAnimationController(string avartarName , AnimationCollection animationCollection, GameObject warrior)
+        private void InitAnimationController(string avartarName , AnimationCollection animationCollection, SceneObject warrior)
         {
             var animationController = new AnimationController(warrior);
             animationController.SetFloat("speed", 0f);
@@ -204,7 +206,7 @@ namespace BlazorChatApp.Client.ChatLand
             await _context.EndBatchAsync();
         }
 
-        private async ValueTask Render(GameObject node)
+        private async ValueTask Render(SceneObject node)
         {
             if (null == node)
                 return;

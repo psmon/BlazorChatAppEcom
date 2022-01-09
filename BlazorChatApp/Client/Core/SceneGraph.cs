@@ -6,16 +6,16 @@ namespace BlazorChatApp.Client.Core
     {
         public SceneGraph()
         {
-            Root = new GameObject();
+            Root = new SceneObject();
         }
 
-        public async ValueTask Update(GameContext game)
+        public async ValueTask Update(SceneContext game)
         {
             if (null == Root)
                 return;
             await Root.Update(game);
         }
         
-        public GameObject Root { get; }
+        public SceneObject Root { get; }
     }
 }

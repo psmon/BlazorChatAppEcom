@@ -5,6 +5,6 @@ namespace BlazorChatApp.Client.Core
 {
     public interface IRenderable
     {
-        ValueTask Render(GameContext game, Canvas2DContext context);
+        ValueTask Render(SceneContext game, Canvas2DContext context);
     }
 }

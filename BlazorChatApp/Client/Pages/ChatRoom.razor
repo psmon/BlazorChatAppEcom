@@ -23,6 +23,7 @@
 <div id="canvasContainer" style="width: 800px; height: 600px; position: absolute;">
     <img @ref="_img_back" hidden id="spritesheet" src="/img/estreet.jpg" />
     <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
+    <img @ref="_img_chatbox" hidden id="spritesheet" src="/img/chatbox.png" />
     <BECanvas Width=800 Height=600 @ref="_canvas"></BECanvas>
 </div>
 
@@ -81,8 +82,10 @@
     public HubConnection hubConnection { get; set; }
 
     BECanvasComponent _canvas;
+    Dictionary<string, ElementReference> resource = new Dictionary<string, ElementReference>();
     ElementReference _img_back;
     ElementReference _img_char1;
+    ElementReference _img_chatbox;
 
     private string LoginId { get; set; }
 
@@ -160,7 +163,7 @@
             }
             else
             {
-                _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false);
+                _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false, resource);
             }
         });
 
@@ -173,7 +176,7 @@
                 {
                     bool isMine = pos.Id == LoginId ? true : false;
 
-                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine);
+                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine, resource);
                 }
             }
         });
@@ -252,10 +255,9 @@
 
         await JsRuntime.InvokeAsync<object>("initGame", DotNetObjectReference.Create(this));
 
-        Dictionary<string, ElementReference> resource = new Dictionary<string, ElementReference>();
-
         resource["img-char1"] = _img_char1;
         resource["img-back"] = _img_back;
+        resource["img-chatbox"] = _img_chatbox;
 
         _chatLand = await ChatLand.Create(_canvas, resource, animationCollections);
 

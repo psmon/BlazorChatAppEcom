@@ -29,7 +29,7 @@ namespace BlazorChatApp.Client.ChatLand
         public double Width { get; private set; } = 800;
         public double Height { get; private set; } = 600;
 
-        public ChatField(GameObject owner) : base(owner)
+        public ChatField(SceneObject owner) : base(owner)
         {
             storeLinks.Add(new StoreLink()
             { 
@@ -115,12 +115,12 @@ namespace BlazorChatApp.Client.ChatLand
 
 
 
-        public async override ValueTask Update(GameContext game)
+        public async override ValueTask Update(SceneContext game)
         {
             //await StepForward();
         }
 
-        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        public async ValueTask Render(SceneContext game, Canvas2DContext context)
         {
             double fps = 1.0 / (DateTime.Now - LastRender).TotalSeconds;
             LastRender = DateTime.Now;

@@ -10,6 +10,8 @@ using BlazorChatApp.Client.Core.Components;
 using BlazorChatApp.Client.Core.Exceptions;
 using BlazorChatApp.Shared;
 
+using Microsoft.AspNetCore.Components;
+
 namespace BlazorChatApp.Client.ChatLand
 {
     public class Character : BaseComponent, IRenderable
@@ -17,6 +19,8 @@ namespace BlazorChatApp.Client.ChatLand
         private readonly TransformComponent _transform;
         public string Name{ get;set; }
         public string ChatMessage{ get;set; }
+
+        public Dictionary<string,ElementReference> resource {get;set; }
 
         private int ChatViewTime { get;set; } = 60*10;
 
@@ -33,11 +37,13 @@ namespace BlazorChatApp.Client.ChatLand
 
         private const int KeySpeed = 10;
 
-        private int _keyTime = KeySpeed;
+        private bool _isMine;
 
-        public Character(AnimationCollection animationCollection, GameObject owner, bool isMe, string id, string name) : base(owner)
+        public Character(AnimationCollection animationCollection, SceneObject owner, bool isMine, string id, string name) : base(owner)
         {
             Name = name;
+
+            _isMine = isMine;
 
             _queue= new Queue<UpdateUserPos>();
             
@@ -64,12 +70,12 @@ namespace BlazorChatApp.Client.ChatLand
             ChatMessage = message;
         }
 
-        public override async ValueTask Update(GameContext game)
+        public override async ValueTask Update(SceneContext game)
         {
             await UpdateByQueue(game);
         }
 
-        public async ValueTask UpdateByKey(GameContext game)
+        public async ValueTask UpdateByKey(SceneContext game)
         {
             var right = InputSystem.Instance.GetKeyState(Keys.Right);
             var left = InputSystem.Instance.GetKeyState(Keys.Left);
@@ -123,7 +129,7 @@ namespace BlazorChatApp.Client.ChatLand
             _animationController.SetFloat("speed", speed);
         }
 
-        public async ValueTask UpdateByQueue(GameContext game)
+        public async ValueTask UpdateByQueue(SceneContext game)
         {
             UpdateUserPos updateUserPos;            
 
@@ -194,7 +200,7 @@ namespace BlazorChatApp.Client.ChatLand
             _animationController.SetFloat("speed", speed);
         }
 
-        public async ValueTask Render(GameContext game, Canvas2DContext context)
+        public async ValueTask Render(SceneContext game, Canvas2DContext context)
         {
             string NameText = Name;
 
@@ -210,16 +216,29 @@ namespace BlazorChatApp.Client.ChatLand
             }
 
             await context.SaveAsync();
+
+            //닉네임
             await context.SetFontAsync("14px 바탕체");            
             await context.SetFillStyleAsync("Blue");
-            await context.FillTextAsync(Name, _transform.Local.Position.X+10, _transform.Local.Position.Y + 75);
+            await context.FillTextAsync(Name, 
+                _transform.Local.Position.X+10, _transform.Local.Position.Y + 75);
 
             if(!string.IsNullOrEmpty(ChatMessage))
             {
-                //await context.SetFillStyleAsync("White");
-                //await context.FillRectAsync(_transform.Local.Position.X, _transform.Local.Position.Y - 34, 120 , 34 );
+                //채팅 Box
+                int dynamicWith = 50 + ((ChatMessage.Length -3)*15);
+
+                await context.DrawImageAsync(resource["img-chatbox"], 
+                    _transform.Local.Position.X + 20, _transform.Local.Position.Y - 40, dynamicWith, 50);
+
+                //채팅 메시징
                 await context.SetFillStyleAsync("Black");
-                await context.FillTextAsync(ChatMessage, _transform.Local.Position.X+20, _transform.Local.Position.Y-2);
+                await context.FillTextAsync(ChatMessage, 
+                    _transform.Local.Position.X + 23, _transform.Local.Position.Y-18);
+            }
+
+            if(_isMine)
+            {
             }
 
             await context.RestoreAsync();                        

@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace BlazorChatApp.Client.Core
 {
-    public abstract class GameContext
+    public abstract class SceneContext
     {
         private bool _isFirst = true;
 

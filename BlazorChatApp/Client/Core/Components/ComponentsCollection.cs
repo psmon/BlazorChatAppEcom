@@ -14,10 +14,10 @@ namespace BlazorChatApp.Client.Core.Components
         private static readonly Lazy<ComponentsFactory> _instance = new Lazy<ComponentsFactory>(new ComponentsFactory());
         public static ComponentsFactory Instance => _instance.Value;
 
-        public TC Create<TC>(GameObject owner) where TC : class, IComponent
+        public TC Create<TC>(SceneObject owner) where TC : class, IComponent
         {
             var type = typeof(TC);
-            var ctor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new []{typeof(GameObject)}, null);
+            var ctor = type.GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public, null, new []{typeof(SceneObject)}, null);
             return ctor.Invoke(new[] {owner}) as TC;
         }  
     }
@@ -25,10 +25,10 @@ namespace BlazorChatApp.Client.Core.Components
 
     public class ComponentsCollection : IEnumerable<IComponent>
     {
-        private readonly GameObject _owner;
+        private readonly SceneObject _owner;
         private readonly IDictionary<Type, IComponent> _items;
 
-        public ComponentsCollection(GameObject owner)
+        public ComponentsCollection(SceneObject owner)
         {
             _owner = owner;
             _items = new Dictionary<Type, IComponent>();

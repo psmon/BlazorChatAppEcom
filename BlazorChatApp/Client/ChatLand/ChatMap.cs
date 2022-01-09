@@ -11,16 +11,16 @@ namespace BlazorChatApp.Client.ChatLand
 {
     public class ChatMap : BaseComponent, IRenderable
     {
-        public ChatMap(GameObject owner) : base(owner)
+        public ChatMap(SceneObject owner) : base(owner)
         { 
         }
 
-        public override async ValueTask Update(GameContext game)
+        public override async ValueTask Update(SceneContext game)
         { 
 
         }
 
-        public ValueTask Render(GameContext game, Canvas2DContext context)
+        public ValueTask Render(SceneContext game, Canvas2DContext context)
         {
             throw new NotImplementedException();
         }

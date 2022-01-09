@@ -5,15 +5,15 @@ namespace BlazorChatApp.Client.Core.Components
 {
     public abstract class BaseComponent : IComponent
     {
-        protected BaseComponent(GameObject owner)
+        protected BaseComponent(SceneObject owner)
         {
             this.Owner = owner ?? throw new ArgumentNullException(nameof(owner));
         }
 
-        public virtual async ValueTask Update(GameContext game)
+        public virtual async ValueTask Update(SceneContext game)
         {
         }
 
-        public GameObject Owner { get; }
+        public SceneObject Owner { get; }
     }
 }

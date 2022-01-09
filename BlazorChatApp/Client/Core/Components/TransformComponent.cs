@@ -7,11 +7,11 @@ namespace BlazorChatApp.Client.Core.Components
         private Transform _local = Transform.Identity();
         private readonly Transform _world = Transform.Identity();
 
-        public TransformComponent(GameObject owner) : base(owner)
+        public TransformComponent(SceneObject owner) : base(owner)
         {
         }
 
-        public override async ValueTask Update(GameContext game)
+        public override async ValueTask Update(SceneContext game)
         {
             _world.Clone(ref _local);
             

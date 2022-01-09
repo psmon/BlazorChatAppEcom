@@ -96,7 +96,8 @@ namespace BlazorChatApp.Server
                 var actorSystem = app.ApplicationServices.GetService<ActorSystem>();
                 var serviceScopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
                 //·ë»ý¼º~
-                var roomActor = actorSystem.ActorOf(Props.Create(() => new RoomActor("room1", serviceScopeFactory)),"room1");
+                var roomActor = actorSystem.ActorOf(Props.Create(() => new RoomActor("room1", 
+                    serviceScopeFactory)),"room1");
             });
 
             lifetime.ApplicationStopping.Register(() =>
