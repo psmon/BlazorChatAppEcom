@@ -4,6 +4,7 @@ using BlazorChatApp.Server.Hubs;
 using BlazorChatApp.Server.Service;
 
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.Configuration;
@@ -49,7 +50,8 @@ namespace BlazorChatApp.Server
             services.AddCors(options =>
             {
                 options.AddPolicy(CorsOrigins,
-                    builder => builder.AllowAnyOrigin()
+                    builder => builder.AllowAnyOrigin()                    
+                    .SetIsOriginAllowedToAllowWildcardSubdomains()
                     .AllowAnyMethod()
                     .AllowAnyHeader());
             });
@@ -61,7 +63,8 @@ namespace BlazorChatApp.Server
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApplicationLifetime lifetime)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApplicationLifetime lifetime,
+            ICorsService corsService, ICorsPolicyProvider corsPolicyProvider)
         {
             app.UseResponseCompression();
 
@@ -75,12 +78,27 @@ namespace BlazorChatApp.Server
                 app.UseExceptionHandler("/Error");
             }
 
-            app.UseBlazorFrameworkFiles();
-            app.UseStaticFiles();
+            app.UseBlazorFrameworkFiles();            
 
             app.UseRouting();
 
             app.UseCors(CorsOrigins);
+
+            app.UseStaticFiles(new StaticFileOptions
+            {
+                ServeUnknownFileTypes = true,
+                OnPrepareResponse = (ctx) =>
+                {
+                    var policy = corsPolicyProvider.GetPolicyAsync(ctx.Context, CorsOrigins)
+                        .ConfigureAwait(false)
+                        .GetAwaiter().GetResult();
+
+                    var corsResult = corsService.EvaluatePolicy(ctx.Context, policy);
+
+                    corsService.ApplyResult(corsResult, ctx.Context.Response);
+                }
+            });
+
 
             app.UseEndpoints(endpoints =>
             {
@@ -96,8 +114,7 @@ namespace BlazorChatApp.Server
                 var actorSystem = app.ApplicationServices.GetService<ActorSystem>();
                 var serviceScopeFactory = app.ApplicationServices.GetService<IServiceScopeFactory>();
                 //·ë»ý¼º~
-                var roomActor = actorSystem.ActorOf(Props.Create(() => new RoomActor("room1", 
-                    serviceScopeFactory)),"room1");
+                var roomActor = actorSystem.ActorOf(Props.Create(() => new RoomActor("room1", serviceScopeFactory)),"room1");
             });
 
             lifetime.ApplicationStopping.Register(() =>
