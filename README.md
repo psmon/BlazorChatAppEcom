@@ -57,7 +57,23 @@ CSS UX :
 
 	docker push registry.webnori.com/blazor-chatapp-client:dev
 
+```
+version: '2'
+services:
+  blazor-chat-app:
+    image: registry.webnori.com/blazor-chatapp-server:dev
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    ports:
+    - 8001:8080/tcp
+    labels:
+      io.rancher.scheduler.affinity:host_label: server=late01
+      io.rancher.container.hostname_override: container_name
+      io.rancher.container.pull_image: always
 
-	http://sam.webnori.com/
+```
+
+
+	https://chat.webnori.com/
 
 
