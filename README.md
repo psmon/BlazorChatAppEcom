@@ -40,6 +40,8 @@ CSS UX :
 
 ## 로컬빌드
 
+	docker build -f BlazorChatApp/Server/Dockerfile -t registry.webnori.com/blazor-chatapp-server:dev .
+
 ### OnlyBuild
 	docker-compose build  -
 
