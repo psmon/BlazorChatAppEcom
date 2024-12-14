@@ -93,7 +93,7 @@
     //Product
     string TextValue { get; set; }
 
-    private SearchResult searchResult;
+    //private SearchResult searchResult;
 
     private List<SearchProduct> products = new List<SearchProduct>();
 
@@ -126,23 +126,11 @@
     private void UpdateProcutView()
     {
         dataSource.Clear();
-        var suffleProduct = searchResult.list.OrderBy(a => rng.Next()).ToList();
-        foreach (var item in suffleProduct.Take(10))
-        {
-            dataSource.Add(new
-            {
-                image = item.imageUrl1,
-                label = item.mallName,
-                content = item.nameKr
-            });
-        }
     }
 
     protected override async Task OnInitializedAsync()
     {
         shopItems = await Http.GetFromJsonAsync<ShopItem[]>("ShopItem");
-
-        searchResult = await Http.GetFromJsonAsync<SearchResult>("Chat?keyword=DGROUPBEST");
 
         LoginId = Guid.NewGuid().ToString();    //Fake Login ID
 
@@ -245,7 +233,7 @@
         await hubConnection.SendAsync("SyncRoom", syndMsg);
 
         //OpenDrawer(Anchor.Right);
-        searchResult = await Http.GetFromJsonAsync<SearchResult>($"Chat?keyword=DGROUPBEST");
+        //searchResult = await Http.GetFromJsonAsync<SearchResult>($"Chat?keyword=DGROUPBEST");
 
     }
 
