@@ -1,7 +1,6 @@
 using Akka.Actor;
 
 using BlazorChatApp.Server.Hubs;
-using BlazorChatApp.Server.Service;
 
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
@@ -44,8 +43,6 @@ namespace BlazorChatApp.Server
 
             var actorSystem = ActorSystem.Create("AkkaDotBootSystem");
             services.AddSingleton(actorSystem);
-
-            services.AddScoped<SearchService>();
 
             services.AddCors(options =>
             {

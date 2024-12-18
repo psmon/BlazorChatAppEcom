@@ -14,5 +14,9 @@
     <ProjectReference Include="..\Shared\BlazorChatApp.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 
 </Project>

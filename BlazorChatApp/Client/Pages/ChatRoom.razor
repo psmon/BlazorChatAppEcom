@@ -7,7 +7,6 @@
 @using BlazorChatApp.Shared;
 @using BlazorChatApp.Client.ChatLand;
 @using Microsoft.JSInterop
-@using ServiceModel.Models.Search
 @using System.Drawing
 @inject HttpClient Http
 
@@ -93,12 +92,6 @@
     //Product
     string TextValue { get; set; }
 
-    //private SearchResult searchResult;
-
-    private List<SearchProduct> products = new List<SearchProduct>();
-
-    private ShopItem[] shopItems;
-
     private bool visible = false;
 
     bool mandatory = true;
@@ -129,9 +122,7 @@
     }
 
     protected override async Task OnInitializedAsync()
-    {
-        shopItems = await Http.GetFromJsonAsync<ShopItem[]>("ShopItem");
-
+    {        
         LoginId = Guid.NewGuid().ToString();    //Fake Login ID
 
         //UpdateProcutView();
@@ -198,8 +189,7 @@
                     StateHasChanged();
                 }
                 else
-                {
-                    products.Clear();
+                {                    
                     dataSource.Clear();
                     opened = false;
                     StateHasChanged();
