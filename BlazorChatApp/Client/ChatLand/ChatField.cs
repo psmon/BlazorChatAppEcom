@@ -33,45 +33,11 @@ namespace BlazorChatApp.Client.ChatLand
         {
             storeLinks.Add(new StoreLink()
             { 
-                Name = "2FA몰",
+                Name = "",
                 PosX = 0,PosY=180,
                 Link="AGROUPBEST"
             });
 
-            storeLinks.Add(new StoreLink()
-            { 
-                Name = "2FB몰",
-                PosX = 410,PosY=180,
-                Link="BGROUPBEST"
-            });
-
-            storeLinks.Add(new StoreLink()
-            { 
-                Name = "2FC몰",
-                PosX = 730,PosY=180,
-                Link="FGROUPBEST"
-            });
-
-            storeLinks.Add(new StoreLink()
-            { 
-                Name = "1FA몰",
-                PosX = 0,PosY=378,
-                Link="CGROUPBEST"
-            });
-
-            storeLinks.Add(new StoreLink()
-            { 
-                Name = "1FB몰",
-                PosX = 410,PosY=378,
-                Link="EGROUPBEST"
-            });
-
-            storeLinks.Add(new StoreLink()
-            { 
-                Name = "1FC몰",
-                PosX = 730,PosY=378,
-                Link="FGROUPBEST"
-            });
 
         }
 
@@ -133,7 +99,7 @@ namespace BlazorChatApp.Client.ChatLand
             await context.SetFillStyleAsync("#FFFFFF");
 
 
-            await context.FillTextAsync("Meta EShop", 10, 30);
+            await context.FillTextAsync("Happy New Year 2025", 10, 30);
             await context.SetFontAsync("16px consolas");
             await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
             await context.SetStrokeStyleAsync("#FFFFFF");
