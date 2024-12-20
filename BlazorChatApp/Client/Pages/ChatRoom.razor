@@ -132,15 +132,13 @@
             if (user.Id == LoginId)
             {
                 Name = user.Name;
-                RoomName = room.Name;                
+                RoomName = room.Name;
+
             }
             else
             {
                 _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false, resource);
             }
-
-            StateHasChanged();
-
         });
 
         hubConnection.On<UserInfo, List<UpdateUserPos>>("OnSyncRoom", (user, updateUserPos) =>
@@ -155,17 +153,13 @@
                     _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine, resource);
                 }
             }
-
-            StateHasChanged();
         });
 
         //ChatMessage
         hubConnection.On<ChatMessage>("OnChatMessage", (chatMessage) =>
         {
             bool isMine = chatMessage.From.Id == LoginId ? true : false;
-
             _messages.Add(new Message(chatMessage.From.Name, chatMessage.Message, isMine));
-
             Console.WriteLine($"WS - OnChatMessage");
             _chatLand.ChatMessage(chatMessage);
 
@@ -176,9 +170,7 @@
 
         hubConnection.On<UpdateUserPos>("OnUpdateUserPos", (userPos) =>
         {
-            Console.WriteLine($"WS - OnUpdateUserPos");            
-            StateHasChanged();
-
+            Console.WriteLine($"WS - OnUpdateUserPos");
             _chatLand.UpdateUserPos(userPos);
         });
 
@@ -186,11 +178,12 @@
         {
             Console.WriteLine($"WS - OnLeaveRoom");
             _chatLand.RemoveUser(room.UserInfo.Id);
-
             StateHasChanged();
         });
 
         await hubConnection.StartAsync();
+
+        await Task.Delay(2000);
 
         JoinRoom sendMsg = new JoinRoom()
         {
@@ -198,16 +191,16 @@
             RoomInfo = new RoomInfo() { Name = "room1" }
         };
 
+        await hubConnection.SendAsync("JoInRoom", sendMsg);
+
         SyncRoom syndMsg = new SyncRoom()
         {
             UserInfo = new UserInfo() { Name = "user", Id = LoginId },
             RoomInfo = new RoomInfo() { Name = "room1" }
         };
-        
-        await hubConnection.SendAsync("JoInRoom", sendMsg);
 
         await hubConnection.SendAsync("SyncRoom", syndMsg);
-        
+
 
     }
 
