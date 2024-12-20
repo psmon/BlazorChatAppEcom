@@ -48,8 +48,7 @@
                                 </div>
                             }
                         }
-                        <hr />
-                        <input type="text" class="input-lg" placeholder="enter your comment" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler" @bind="ChatMessageText"></input>
+                        <hr />                        
                     </div>
                 </th>
             </tr>
@@ -63,11 +62,15 @@
     </table>
 </div>
 
-@if (dataSource.Count > 0)
-{
-    <Carousel DataSource=@dataSource Style="width:800px;height:600px;"></Carousel>
-}
 
+<input type="text" class="input-lg" placeholder="enter your comment" @onkeydown="KeyboardEventHandler" @onkeypress="KeyboardEventHandler" @onkeyup="KeyboardChatEventHandler" @bind="ChatMessageText"></input>
+
+<div class="arrow-btns">
+    <button @onclick='@(async () => await KeyboardEventHandlerEx("ArrowUp"))'>↑</button>
+    <button @onclick='@(async () => await KeyboardEventHandlerEx("ArrowLeft"))'>←</button>
+    <button @onclick='@(async () => await KeyboardEventHandlerEx("ArrowRight"))'>→</button>
+    <button @onclick='@(async () => await KeyboardEventHandlerEx("ArrowDown"))'>↓</button>
+</div>
 
 @code {
 
@@ -98,8 +101,6 @@
 
     private Random rng = new Random();
 
-    private List<object> dataSource = new List<object>();
-
     //Chat
     // flag to indicate chat status
     private bool _isChatting = false;
@@ -116,16 +117,10 @@
     // list of messages in chat
     private List<Message> _messages = new List<Message>();
 
-    private void UpdateProcutView()
-    {
-        dataSource.Clear();
-    }
 
     protected override async Task OnInitializedAsync()
     {        
         LoginId = Guid.NewGuid().ToString();    //Fake Login ID
-
-        //UpdateProcutView();
 
         hubConnection = new HubConnectionBuilder()
             .WithUrl(_navigationManager.ToAbsoluteUri("/chathub"))
@@ -137,13 +132,15 @@
             if (user.Id == LoginId)
             {
                 Name = user.Name;
-                RoomName = room.Name;
-                StateHasChanged();
+                RoomName = room.Name;                
             }
             else
             {
                 _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false, resource);
             }
+
+            StateHasChanged();
+
         });
 
         hubConnection.On<UserInfo, List<UpdateUserPos>>("OnSyncRoom", (user, updateUserPos) =>
@@ -158,6 +155,8 @@
                     _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine, resource);
                 }
             }
+
+            StateHasChanged();
         });
 
         //ChatMessage
@@ -177,24 +176,9 @@
 
         hubConnection.On<UpdateUserPos>("OnUpdateUserPos", (userPos) =>
         {
-            Console.WriteLine($"WS - OnUpdateUserPos");
-            //ME
-            if (userPos.Id == LoginId)
-            {
-                var linkinfo = _chatLand.CollisionCheck(userPos.AbsPosX, userPos.AbsPosY);
-                if (linkinfo != null)
-                {
-                    UpdateProcutView();
-                    opened = true;
-                    StateHasChanged();
-                }
-                else
-                {                    
-                    dataSource.Clear();
-                    opened = false;
-                    StateHasChanged();
-                }
-            }
+            Console.WriteLine($"WS - OnUpdateUserPos");            
+            StateHasChanged();
+
             _chatLand.UpdateUserPos(userPos);
         });
 
@@ -202,6 +186,8 @@
         {
             Console.WriteLine($"WS - OnLeaveRoom");
             _chatLand.RemoveUser(room.UserInfo.Id);
+
+            StateHasChanged();
         });
 
         await hubConnection.StartAsync();
@@ -217,13 +203,11 @@
             UserInfo = new UserInfo() { Name = "user", Id = LoginId },
             RoomInfo = new RoomInfo() { Name = "room1" }
         };
-
+        
         await hubConnection.SendAsync("JoInRoom", sendMsg);
 
         await hubConnection.SendAsync("SyncRoom", syndMsg);
-
-        //OpenDrawer(Anchor.Right);
-        //searchResult = await Http.GetFromJsonAsync<SearchResult>($"Chat?keyword=DGROUPBEST");
+        
 
     }
 
@@ -344,6 +328,27 @@
         //EventInfo = "Event Type " + args.Type;
 
         switch (args.Key)
+        {
+            case "ArrowUp":
+            await KeyUp();
+            break;
+            case "ArrowDown":
+            await KeyDown();
+            break;
+            case "ArrowLeft":
+            await KeyLeft();
+            break;
+            case "ArrowRight":
+            await KeyRight();
+            break;
+        }
+    }
+
+    private async Task KeyboardEventHandlerEx(string key)
+    {
+        KeyPressed = "Key Pressed is " + key;
+
+        switch (key)
         {
             case "ArrowUp":
             await KeyUp();
