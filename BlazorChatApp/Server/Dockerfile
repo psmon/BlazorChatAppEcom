@@ -5,6 +5,7 @@ WORKDIR /app
 EXPOSE 80
 
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+
 WORKDIR /src
 COPY ["BlazorChatApp/Server/BlazorChatApp.Server.csproj", "BlazorChatApp/Server/"]
 RUN dotnet restore "BlazorChatApp/Server/BlazorChatApp.Server.csproj"
@@ -13,7 +14,7 @@ WORKDIR "/src/BlazorChatApp/Server"
 RUN dotnet build "BlazorChatApp.Server.csproj" -c Release -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "BlazorChatApp.Server.csproj" -c Release -o /app/publish
+RUN dotnet publish "BlazorChatApp.Server.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
