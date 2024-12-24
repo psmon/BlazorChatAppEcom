@@ -120,6 +120,10 @@
 
     protected override async Task OnInitializedAsync()
     {        
+    }
+
+    public async Task StartWebSocket()
+    {
         LoginId = Guid.NewGuid().ToString();    //Fake Login ID
 
         hubConnection = new HubConnectionBuilder()
@@ -183,25 +187,23 @@
 
         await hubConnection.StartAsync();
 
-        await Task.Delay(2000);
 
         JoinRoom sendMsg = new JoinRoom()
-        {
-            UserInfo = new UserInfo() { Name = "user", Id = LoginId },
-            RoomInfo = new RoomInfo() { Name = "room1" }
-        };
+            {
+                UserInfo = new UserInfo() { Name = "user", Id = LoginId },
+                RoomInfo = new RoomInfo() { Name = "room1" }
+            };
 
         await hubConnection.SendAsync("JoInRoom", sendMsg);
 
         SyncRoom syndMsg = new SyncRoom()
-        {
-            UserInfo = new UserInfo() { Name = "user", Id = LoginId },
-            RoomInfo = new RoomInfo() { Name = "room1" }
-        };
+            {
+                UserInfo = new UserInfo() { Name = "user", Id = LoginId },
+                RoomInfo = new RoomInfo() { Name = "room1" }
+            };
 
         await hubConnection.SendAsync("SyncRoom", syndMsg);
-
-
+        
     }
 
     public async Task InitGame(Dictionary<string, AnimationCollection> animationCollections)
@@ -218,6 +220,8 @@
 
         // this will make sure that the viewport is correctly initialized
         await JsRuntime.InvokeAsync<object>("gameWindowResize", DotNetObjectReference.Create(this));
+
+        await StartWebSocket();
 
     }
 
