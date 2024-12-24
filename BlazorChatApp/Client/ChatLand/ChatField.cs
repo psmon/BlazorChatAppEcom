@@ -23,6 +23,9 @@ namespace BlazorChatApp.Client.ChatLand
     {
         public DateTime LastRender { get;set; }
 
+        private readonly List<Snowflake> snowflakes = new List<Snowflake>();
+        private readonly Random rand = new Random();
+
         public Dictionary<string,ElementReference> resource {get;set; }
 
         public readonly List<StoreLink> storeLinks= new List<StoreLink>();        
@@ -37,6 +40,18 @@ namespace BlazorChatApp.Client.ChatLand
                 PosX = 0,PosY=180,
                 Link="AGROUPBEST"
             });
+
+            // Initialize snowflakes
+            for (int i = 0; i < 100; i++)
+            {
+                snowflakes.Add(new Snowflake(
+                    rand.NextDouble() * Width,
+                    rand.NextDouble() * Height,
+                    rand.NextDouble() * 2 + 1,
+                    rand.NextDouble() * 3 + 1,
+                    "#FFFFFF"
+                ));
+            }
 
 
         }
@@ -83,7 +98,10 @@ namespace BlazorChatApp.Client.ChatLand
 
         public async override ValueTask Update(SceneContext game)
         {
-            //await StepForward();
+            foreach (var snowflake in snowflakes)
+            {
+                snowflake.Update(Height);
+            }
         }
 
         public async ValueTask Render(SceneContext game, Canvas2DContext context)
@@ -112,6 +130,16 @@ namespace BlazorChatApp.Client.ChatLand
             {
                 await context.FillTextAsync($"{store.Name}", store.PosX, store.PosY);
             }
+
+            // Render snowflakes
+            foreach (var snowflake in snowflakes)
+            {
+                await context.BeginPathAsync();
+                await context.ArcAsync(snowflake.X, snowflake.Y, snowflake.Radius, 0, 2 * Math.PI, false);
+                await context.SetFillStyleAsync(snowflake.Color);
+                await context.FillAsync();
+            }
+
 
             await context.SetFillStyleAsync("White");
             await context.SetStrokeStyleAsync("#FFFFFF");
