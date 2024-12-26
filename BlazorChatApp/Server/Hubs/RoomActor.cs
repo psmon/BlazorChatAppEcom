@@ -58,7 +58,7 @@ namespace BlazorChatApp.Server.Hubs
                 };
 
                 // Default Position
-                double posx = random.Next(300,600);
+                double posx = random.Next(0,300);
                 double posy = random.Next(400,550);
 
                 UpdateUserPos updateUserPos= new UpdateUserPos()

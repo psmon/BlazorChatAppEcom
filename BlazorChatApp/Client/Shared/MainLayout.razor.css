@@ -6,6 +6,8 @@
 
 .main {
     flex: 1;
+    padding-top: 0 !important;
+    padding-left: 0 !important;
 }
 
 .sidebar {
@@ -67,4 +69,8 @@
         padding-left: 2rem !important;
         padding-right: 1.5rem !important;
     }
+}
+
+.top-row, .content {
+    padding: 0 !important;
 }
