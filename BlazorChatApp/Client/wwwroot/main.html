@@ -2,17 +2,122 @@
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf8">
-    <meta name="viewport" content="user-scalable=0" />
-    <meta property="fb:app_id" content="132764313565868">
+    <meta name="viewport" content="user-scalable=0" />    
     <title>PSCocos Canvas Lib</title>
     <link rel="stylesheet" type="text/css" href="script/style.css" />
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
-    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
-    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="lib/cocos2d-beta2.js"></script>
     <script src="lib/pscoco.js"></script>
     <script src="script/demo1.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .headContent {
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        #psmon-demo {
+            width: 800px;
+            height: 600px;
+            background-color: #f0f0f0;
+            margin-right: 20px;
+        }
+
+        .topcontent2 {
+            flex: 1;
+        }
+
+            .topcontent2 ul {
+                list-style: none;
+                padding: 0;
+            }
+
+            .topcontent2 li {
+                margin-bottom: 10px;
+            }
+
+            .topcontent2 button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                border: none;
+                background-color: #007bff;
+                color: white;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+                .topcontent2 button:hover {
+                    background-color: #0056b3;
+                }
+
+        #dialog-modal {
+            width: 300px;
+            height: 500px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+            #dialog-modal textarea {
+                width: 100%;
+                height: 300px;
+                margin-bottom: 10px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-family: monospace;
+            }
+
+            #dialog-modal button {
+                padding: 10px 20px;
+                font-size: 16px;
+                cursor: pointer;
+                border: none;
+                background-color: #28a745;
+                color: white;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+
+                #dialog-modal button:hover {
+                    background-color: #218838;
+                }
+
+        #accordion {
+            margin-top: 20px;
+        }
+
+            #accordion h3 {
+                font-size: 18px;
+                background-color: #007bff;
+                color: white;
+                padding: 10px;
+                border-radius: 5px;
+                cursor: pointer;
+                margin: 0;
+            }
+
+            #accordion div {
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                display: none;
+            }
+    </style>
     <script type="text/javascript">
         var cocoApp = null;
         $(document).ready(function () {
@@ -20,81 +125,59 @@
             cocoApp = new Application('psmon-demo', 'gray');
             cocoApp.run();
 
-            $("#dialog-modal").dialog({
-                height: 500,
-                width: 300,
-                position: [830, 70],
-                modal: false
-            });
-
-            $("#accordion").accordion({
-                heightStyle: "content"
+            $("#accordion h3").click(function () {
+                $(this).next().slideToggle();
             });
 
             runDemo(cocoApp, 'rainy');
-        })
+        });
 
         function runCode() {
             cc.Director.sharedDirector.transparent = false;
             var mycode = $("#testcode").val();
-            eval(mycode)
+            eval(mycode);
         }
     </script>
 </head>
 <body>
 
     <p class="title">
-        <strong>PSCOCOS LIB <a href="http://psmon.x-y.net">-PSMON WIKI</a></strong>
+        <strong>PSCOCOS LIB <a href="https://wiki.webnori.com/display/codesniper/pscocos">-PSMON WIKI</a></strong>
     </p>
 
     <div class="headContent">
 
-        <div id="psmon-demo" style="width: 800px; height: 600px;float: left;"></div>
+        <div id="psmon-demo"></div>
 
-        <div style="clear: both;">
+        <div class="topcontent2">
+            <pre class="file">Quick Demo ( http://psmon.x-y.net/pscoco/script/demo1.js 에 포함되어있습니다.)</pre>
+            <ul>
+                <li><button type="button" onclick="runDemo(cocoApp,'createLabel')">CreateLabel</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'clickEvent')">Event(Click,Touch)</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'EaseBounceOut')">Card Demo(EaseBounceOut)</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'seqTo')">Path Ani</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'SpriteAnimation')">SpriteAni(앵그리 개구리)</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'Dino')">SpriteAni(에너자이저 공룡)</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'DinoPlay')">Dino(NewGame)</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'paticle')">파티클</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'greenBall')">떨어지는 공</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'rainy')">비내리는 효과</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'fallball')">낙엽</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'drawBall')">drawBall</button></li>
+                <li><button type="button" onclick="runDemo(cocoApp,'practicalEffect')">practicalEffect</button></li>                
+            </ul>
+        </div>
 
-            <div class="topcontent2">
-                <pre class="file">Quick Demo ( http://psmon.x-y.net/pscoco/script/demo1.js 에 포함되어있습니다.)</pre>
-                <ul>
-                    <li><button type="button" onclick="runDemo(cocoApp,'createLabel')">CreateLabel</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'clickEvent')">Event(Click,Touch)</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'EaseBounceOut')">Card Demo(EaseBounceOut)</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'seqTo')">Path Ani</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'SpriteAnimation')">SpriteAni(앵그리 개구리)</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'Dino')">SpriteAni(에너자이저 공룡)</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'DinoPlay')">Dino(NewGame)</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'paticle')">파티클</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'greenBall')">떨어지는 공</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'rainy')">비내리는 효과</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'fallball')">낙엽</button></li>
-                    <li><button type="button" onclick="runDemo(cocoApp,'drawBall')">drawBall</button></li>
-                </ul>
-            </div>
-
-            <div id="dialog-modal" title="코드연습장" style="width: 300px;height:500px">
-                <pre class="file">코드 연습장</pre>
-                <textarea class="coderun" id="testcode">
-        cc.Director.sharedDirector.backgroundColor="gray";
-        var label = cocoApp.addLabel({string:"PSCOCOS LIB(Easy For COCOS JavaScript,psmon.x-y.net)",fontName:"Arial",fontSize:16,fontColor:"white" });
-        label.moveTo({x:200,y:422,duration:10,angle:5 });
-        label.position.x=300;
-        label.position.y=150;
-    </textarea>
-                <button type="button" onclick="runCode()">Run Code</button>
-                <button type="button" onclick="cocoApp.removeAll()">RemoveAll</button>
-            </div>
-
-            <div style="clear: both;">
-                <br>
-
-
-                <div id="accordion">
-
-                    <h3>PSCOCOS 소개</h3>
-                    <div>
-<pre class="file">
+        <div id="accordion">
+            <h3>PSCOCOS 소개</h3>
+            <div>
+                <pre class="file">
 cocos2d javascript(http://cocos2d-javascript.org/) 조금 개선하여!!  Html5 Canvas 애니메이션을 쉽게 만들수 있도록 만든 라이브러리 입니다.
-</pre>
-</body>
+                </pre>
+            </div>
+        </div>
 
+    </div>
+
+</body>
 </html>

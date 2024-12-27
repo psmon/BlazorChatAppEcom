@@ -393,5 +393,66 @@ function runDemo(app,demoType){
 
             }
             break;
+        case "practicalEffect":
+            director.backgroundColor = "black";
+            var practicalEffectList = new Array();
+            var imgList = ["ball1.png", "ball_green.png"];
+            var curBackGround = imgList[Math.round(Math.random() * 1)];
+
+            // 공의 생성
+            for (var i = 0; i < 50; i++) {
+                var ballImg = cocoApp.addImage('assets/effect/' + curBackGround, 200, 200, false);
+                practicalEffectList.push(ballImg);
+                var circleSpeed = 2;
+                var randomDir = Math.random() * 2 * Math.PI;
+                ballImg.xSpeed = circleSpeed * Math.cos(randomDir);
+                ballImg.ySpeed = circleSpeed * Math.sin(randomDir);
+            }
+
+            // 첫번째 공에게 모든 공의 렌더를 담당
+            practicalEffectList[0].addSchedule({
+                method: function () {
+                    for (var i = 0; i < practicalEffectList.length; i++) {
+                        var curBall = practicalEffectList[i];
+                        curBall.position = cc.ccp(curBall.position.x + curBall.xSpeed, curBall.position.y + curBall.ySpeed);
+                        if (curBall.position.x > canvasWidth) {
+                            curBall.position = cc.ccp(curBall.position.x - canvasWidth, this.position.y);
+                        }
+                        if (curBall.position.x < 0) {
+                            curBall.position = cc.ccp(curBall.position + canvasWidth, this.position.y);
+                        }
+                        if (curBall.position.y > canvasHeight) {
+                            curBall.position = cc.ccp(curBall.position.x, curBall.position.y - canvasHeight);
+                        }
+                        if (curBall.position.y < 0) {
+                            curBall.position = cc.ccp(curBall.position.x, curBall.position + canvasHeight);
+                        }
+                    }
+                },
+                target: null,
+                interval: 0,
+                pause: false
+            });
+
+            // 두번째 공에게 주기적인 초기화를 담당
+            practicalEffectList[1].addSchedule({
+                method: function () {
+                    var ranX = Math.round(Math.random() * canvasWidth);
+                    var ranY = Math.round(Math.random() * canvasHeight);
+                    for (var i = 0; i < practicalEffectList.length; i++) {
+                        var curBall = practicalEffectList[i];
+                        curBall.position = cc.ccp(ranX, ranY);
+                        var circleSpeed = 2;
+                        var randomDir = Math.random() * 2 * Math.PI;
+                        ballImg.xSpeed = circleSpeed * Math.cos(randomDir);
+                        ballImg.ySpeed = circleSpeed * Math.sin(randomDir);
+                    }
+                },
+                target: null,
+                interval: 3,
+                pause: false
+            });
+            break;
+
     }
 }
