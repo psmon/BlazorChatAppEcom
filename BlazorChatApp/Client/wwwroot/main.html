@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-type" content="text/html; charset=utf8">
-    <meta name="viewport" content="user-scalable=0" />    
+    <meta name="viewport" content="user-scalable=0" />
     <title>PSCocos Canvas Lib</title>
     <link rel="stylesheet" type="text/css" href="script/style.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
@@ -13,110 +13,62 @@
     <style>
         body {
             font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
         }
 
         .title {
             font-size: 24px;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin: 20px 0;
+            color: #343a40;
         }
 
-        .headContent {
+        .content {
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
         }
 
         #psmon-demo {
             width: 800px;
             height: 600px;
-            background-color: #f0f0f0;
-            margin-right: 20px;
-        }
-
-        .topcontent2 {
-            flex: 1;
-        }
-
-            .topcontent2 ul {
-                list-style: none;
-                padding: 0;
-            }
-
-            .topcontent2 li {
-                margin-bottom: 10px;
-            }
-
-            .topcontent2 button {
-                padding: 10px 20px;
-                font-size: 16px;
-                cursor: pointer;
-                border: none;
-                background-color: #007bff;
-                color: white;
-                border-radius: 5px;
-                transition: background-color 0.3s;
-            }
-
-                .topcontent2 button:hover {
-                    background-color: #0056b3;
-                }
-
-        #dialog-modal {
-            width: 300px;
-            height: 500px;
-            padding: 20px;
-            border: 1px solid #ccc;
+            background-color: #ffffff;
+            border: 1px solid #dee2e6;
             border-radius: 5px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
-            #dialog-modal textarea {
-                width: 100%;
-                height: 300px;
-                margin-bottom: 10px;
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                font-family: monospace;
-            }
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+        }
 
-            #dialog-modal button {
-                padding: 10px 20px;
-                font-size: 16px;
+            .button-container button {
+                padding: 8px 16px;
+                font-size: 14px;
                 cursor: pointer;
                 border: none;
-                background-color: #28a745;
-                color: white;
-                border-radius: 5px;
-                transition: background-color 0.3s;
-            }
-
-                #dialog-modal button:hover {
-                    background-color: #218838;
-                }
-
-        #accordion {
-            margin-top: 20px;
-        }
-
-            #accordion h3 {
-                font-size: 18px;
                 background-color: #007bff;
                 color: white;
-                padding: 10px;
                 border-radius: 5px;
-                cursor: pointer;
-                margin: 0;
+                margin: 5px;
+                transition: background-color 0.3s, transform 0.3s;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             }
 
-            #accordion div {
-                padding: 10px;
-                border: 1px solid #ccc;
-                border-radius: 5px;
-                display: none;
-            }
+                .button-container button:hover {
+                    background-color: #0056b3;
+                    transform: translateY(-2px);
+                }
     </style>
     <script type="text/javascript">
         var cocoApp = null;
@@ -124,10 +76,6 @@
             //캔버스 어플리케이션 생성및 실행, 인자값은 캔버스가 생성되는 div의 id값
             cocoApp = new Application('psmon-demo', 'gray');
             cocoApp.run();
-
-            $("#accordion h3").click(function () {
-                $(this).next().slideToggle();
-            });
 
             runDemo(cocoApp, 'rainy');
         });
@@ -142,41 +90,27 @@
 <body>
 
     <p class="title">
-        <strong>PSCOCOS LIB <a href="https://wiki.webnori.com/display/codesniper/pscocos">-PSMON WIKI</a></strong>
+        <strong>PSCOCOS LIB <a href="https://wiki.webnori.com/display/codesniper/pscocos" target="_blank">DOC</a></strong>
     </p>
 
-    <div class="headContent">
-
+    <div class="content">
         <div id="psmon-demo"></div>
 
-        <div class="topcontent2">
-            <pre class="file">Quick Demo ( http://psmon.x-y.net/pscoco/script/demo1.js 에 포함되어있습니다.)</pre>
-            <ul>
-                <li><button type="button" onclick="runDemo(cocoApp,'createLabel')">CreateLabel</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'clickEvent')">Event(Click,Touch)</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'EaseBounceOut')">Card Demo(EaseBounceOut)</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'seqTo')">Path Ani</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'SpriteAnimation')">SpriteAni(앵그리 개구리)</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'Dino')">SpriteAni(에너자이저 공룡)</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'DinoPlay')">Dino(NewGame)</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'paticle')">파티클</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'greenBall')">떨어지는 공</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'rainy')">비내리는 효과</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'fallball')">낙엽</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'drawBall')">drawBall</button></li>
-                <li><button type="button" onclick="runDemo(cocoApp,'practicalEffect')">practicalEffect</button></li>                
-            </ul>
+        <div class="button-container">
+            <button type="button" onclick="runDemo(cocoApp,'createLabel')">CreateLabel</button>
+            <button type="button" onclick="runDemo(cocoApp,'clickEvent')">Event</button>
+            <button type="button" onclick="runDemo(cocoApp,'EaseBounceOut')">EaseBounceOut</button>
+            <button type="button" onclick="runDemo(cocoApp,'seqTo')">Path Ani</button>
+            <button type="button" onclick="runDemo(cocoApp,'SpriteAnimation')">SpriteAniA</button>
+            <button type="button" onclick="runDemo(cocoApp,'Dino')">SpriteAniB</button>
+            <button type="button" onclick="runDemo(cocoApp,'DinoPlay')">DinoGame</button>
+            <button type="button" onclick="runDemo(cocoApp,'paticle')">파티클</button>
+            <button type="button" onclick="runDemo(cocoApp,'greenBall')">BallAni</button>
+            <button type="button" onclick="runDemo(cocoApp,'rainy')">RainAni</button>
+            <button type="button" onclick="runDemo(cocoApp,'fallball')">FallAny</button>
+            <button type="button" onclick="runDemo(cocoApp,'drawBall')">DrawBall</button>
+            <button type="button" onclick="runDemo(cocoApp,'practicalEffect')">PracticalEffect</button>
         </div>
-
-        <div id="accordion">
-            <h3>PSCOCOS 소개</h3>
-            <div>
-                <pre class="file">
-cocos2d javascript(http://cocos2d-javascript.org/) 조금 개선하여!!  Html5 Canvas 애니메이션을 쉽게 만들수 있도록 만든 라이브러리 입니다.
-                </pre>
-            </div>
-        </div>
-
     </div>
 
 </body>

@@ -41,8 +41,7 @@
             // render the frame
             game.instance.invokeMethodAsync('GameLoop', timeStamp).then(() => {
                 window.requestAnimationFrame(gameLoop);
-            }).catch(err => {
-                console.error('Error in GameLoop:', err);
+            }).catch(err => {                
                 window.requestAnimationFrame(gameLoop);
             });
         }
