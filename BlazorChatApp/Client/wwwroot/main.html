@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf8">
+    <meta name="viewport" content="user-scalable=0" />
+    <meta property="fb:app_id" content="132764313565868">
+    <title>PSCocos Canvas Lib</title>
+    <link rel="stylesheet" type="text/css" href="script/style.css" />
+    <link rel="stylesheet" href="http://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+
+    <script src="lib/cocos2d-beta2.js"></script>
+    <script src="lib/pscoco.js"></script>
+    <script src="script/demo1.js"></script>
+    <script type="text/javascript">
+        var cocoApp = null;
+        $(document).ready(function () {
+            //캔버스 어플리케이션 생성및 실행, 인자값은 캔버스가 생성되는 div의 id값
+            cocoApp = new Application('psmon-demo', 'gray');
+            cocoApp.run();
+
+            $("#dialog-modal").dialog({
+                height: 500,
+                width: 300,
+                position: [830, 70],
+                modal: false
+            });
+
+            $("#accordion").accordion({
+                heightStyle: "content"
+            });
+
+            runDemo(cocoApp, 'rainy');
+        })
+
+        function runCode() {
+            cc.Director.sharedDirector.transparent = false;
+            var mycode = $("#testcode").val();
+            eval(mycode)
+        }
+    </script>
+</head>
+<body>
+
+    <p class="title">
+        <strong>PSCOCOS LIB <a href="http://psmon.x-y.net">-PSMON WIKI</a></strong>
+    </p>
+
+    <div class="headContent">
+
+        <div id="psmon-demo" style="width: 800px; height: 600px;float: left;"></div>
+
+        <div style="clear: both;">
+
+            <div class="topcontent2">
+                <pre class="file">Quick Demo ( http://psmon.x-y.net/pscoco/script/demo1.js 에 포함되어있습니다.)</pre>
+                <ul>
+                    <li><button type="button" onclick="runDemo(cocoApp,'createLabel')">CreateLabel</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'clickEvent')">Event(Click,Touch)</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'EaseBounceOut')">Card Demo(EaseBounceOut)</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'seqTo')">Path Ani</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'SpriteAnimation')">SpriteAni(앵그리 개구리)</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'Dino')">SpriteAni(에너자이저 공룡)</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'DinoPlay')">Dino(NewGame)</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'paticle')">파티클</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'greenBall')">떨어지는 공</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'rainy')">비내리는 효과</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'fallball')">낙엽</button></li>
+                    <li><button type="button" onclick="runDemo(cocoApp,'drawBall')">drawBall</button></li>
+                </ul>
+            </div>
+
+            <div id="dialog-modal" title="코드연습장" style="width: 300px;height:500px">
+                <pre class="file">코드 연습장</pre>
+                <textarea class="coderun" id="testcode">
+        cc.Director.sharedDirector.backgroundColor="gray";
+        var label = cocoApp.addLabel({string:"PSCOCOS LIB(Easy For COCOS JavaScript,psmon.x-y.net)",fontName:"Arial",fontSize:16,fontColor:"white" });
+        label.moveTo({x:200,y:422,duration:10,angle:5 });
+        label.position.x=300;
+        label.position.y=150;
+    </textarea>
+                <button type="button" onclick="runCode()">Run Code</button>
+                <button type="button" onclick="cocoApp.removeAll()">RemoveAll</button>
+            </div>
+
+            <div style="clear: both;">
+                <br>
+
+
+                <div id="accordion">
+
+                    <h3>PSCOCOS 소개</h3>
+                    <div>
+<pre class="file">
+cocos2d javascript(http://cocos2d-javascript.org/) 조금 개선하여!!  Html5 Canvas 애니메이션을 쉽게 만들수 있도록 만든 라이브러리 입니다.
+</pre>
+</body>
+
+</html>
