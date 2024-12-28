@@ -131,29 +131,18 @@
         hubConnection.On<RoomInfo, UserInfo, UpdateUserPos>("OnJoinRoom", (room, user, pos) =>
         {
             Console.WriteLine($"WS - OnJoinRoom");
-            if (user.Id == LoginId)
-            {
-                Name = user.Name;
-                RoomName = room.Name;
+            _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false, resource);
 
-            }
-            else
-            {
-                _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false, resource);
-            }
         });
 
         hubConnection.On<UserInfo, List<UpdateUserPos>>("OnSyncRoom", (user, updateUserPos) =>
         {
             Console.WriteLine($"WS - OnSyncRoom");
-            if (user.Id == LoginId)
+            foreach (var pos in updateUserPos)
             {
-                foreach (var pos in updateUserPos)
-                {
-                    bool isMine = pos.Id == LoginId ? true : false;
+                bool isMine = pos.Id == LoginId ? true : false;
 
-                    _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine, resource);
-                }
+                _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine, resource);
             }
         });
 

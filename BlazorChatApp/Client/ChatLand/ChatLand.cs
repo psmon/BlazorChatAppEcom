@@ -22,6 +22,8 @@ namespace BlazorChatApp.Client.ChatLand
 
         private Dictionary<string,AnimationCollection> _animationCollection;
 
+        private Dictionary<string,bool> _isInitUser = new Dictionary<string, bool>();
+
 
         public ChatField ChatField {get;set; }
 
@@ -61,7 +63,12 @@ namespace BlazorChatApp.Client.ChatLand
 
         public void AddUser(string id, string name, double posx,double posy, bool isMe, Dictionary<string,ElementReference> resource)
         {
-            if(isMe) MyID = id;
+            if (_isInitUser.ContainsKey(id))
+            {
+                return;
+            }
+
+            if (isMe) MyID = id;
 
             var warrior = new SceneObject();
             AnimationCollection animationCollection;
@@ -118,6 +125,8 @@ namespace BlazorChatApp.Client.ChatLand
             warrior.HashId = id;            
 
             _sceneGraph.Root.AddChild(warrior);
+
+            _isInitUser[id] = true;
 
         }
 
