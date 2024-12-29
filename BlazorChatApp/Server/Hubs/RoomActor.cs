@@ -36,11 +36,10 @@ namespace BlazorChatApp.Server.Hubs
         
         private const int MaxChatHistoryCount = 50;
 
-        private readonly UserInfo botUserInfo1;
-        private readonly UpdateUserPos botUpdateUserPos1;
 
-        private readonly UserInfo botUserInfo2;
-        private readonly UpdateUserPos botUpdateUserPos2;
+        private List<UserInfo> borUserInfos = new List<UserInfo>();
+        private List<UpdateUserPos> botUpdateUserPosList = new List<UpdateUserPos>();
+
 
 
         Random random = new Random();
@@ -66,48 +65,33 @@ namespace BlazorChatApp.Server.Hubs
                 Self
             );
 
-
-            // Initialize bot user
-            botUserInfo1 = new UserInfo()
+            for (int i = 0; i < 10; i++)
             {
-                Id = "bot-1",
-                Name = "ChatBot-1",
-                Color = RandomColor
-            };
+                string RandomColorN = string.Format("#{0:X6}", random.Next(0xFFFFFF));
 
-            botUpdateUserPos1 = new UpdateUserPos()
-            {
-                Id = botUserInfo1.Id,
-                Name = botUserInfo1.Name,
-                PosX = 250,
-                PosY = 250,
-                AbsPosX = 250,
-                AbsPosY = 250,
-                ConnectionId = "bot-connection"
-            };
+                UserInfo userInfo = new UserInfo()
+                {
+                    Id = $"bot-{i}",
+                    Name = $"Bot-{i}",
+                    Color = RandomColorN
+                };
 
-            users[botUserInfo1.Id] = botUpdateUserPos1;
+                UpdateUserPos updateUserPos = new UpdateUserPos()
+                {
+                    Id = userInfo.Id,
+                    Name = userInfo.Name,
+                    PosX = random.Next(0, 800),
+                    PosY = random.Next(0, 600),
+                    AbsPosX = random.Next(0, 800),
+                    AbsPosY = random.Next(0, 600),
+                    ConnectionId = $"bot-connection-{i}"
+                };
 
-            // Initialize bot user 2
-            botUserInfo2 = new UserInfo()
-            {
-                Id = "bot-2",
-                Name = "ChatBot-2",
-                Color = RandomColor2
-            };
+                users[userInfo.Id] = updateUserPos;
+                borUserInfos.Add(userInfo);
+                botUpdateUserPosList.Add(updateUserPos);
+            }
 
-            botUpdateUserPos2 = new UpdateUserPos()
-            {
-                Id = botUserInfo2.Id,
-                Name = botUserInfo2.Name,
-                PosX = 300,
-                PosY = 300,
-                AbsPosX = 300,
-                AbsPosY = 300,
-                ConnectionId = "bot-connection-2"
-            };
-
-            users[botUserInfo2.Id] = botUpdateUserPos2;
 
             Receive<RoomCmd>(cmd => {
                 log.Info("Received String message: {0}", cmd);
@@ -163,9 +147,10 @@ namespace BlazorChatApp.Server.Hubs
                     Color=RandomColor
                 };
 
-                await OnSyncRoom(botUserInfo1, updateUserPosList);
-
-                await OnSyncRoom(botUserInfo2, updateUserPosList);
+                foreach (var botUserInfo in borUserInfos)
+                {                    
+                    await OnSyncRoom(botUserInfo, updateUserPosList);
+                }
 
                 await OnSyncRoom(userInfo, updateUserPosList);
 
@@ -256,16 +241,15 @@ namespace BlazorChatApp.Server.Hubs
             // Handle Tick message
             Receive<Tick>(_ => {
                 log.Info("Tick event triggered");
-
-                bool isSwitch = random.Next(2) == 0;
-
-                if (isSwitch)
+                
+                foreach (var botUpdateUserPos1 in botUpdateUserPosList)
                 {
-                    MoveBot(botUpdateUserPos1);
-                }
-                else
-                {
-                    MoveBot(botUpdateUserPos2);
+                    bool isMove = random.Next(5) == 0;
+
+                    if(isMove)
+                    {
+                        MoveBot(botUpdateUserPos1);
+                    }
                 }
                 
             });
@@ -282,7 +266,7 @@ namespace BlazorChatApp.Server.Hubs
 
             bool isYDirection = random.Next(4) == 0;
 
-            bool isHelloMessage = random.Next(100) < 10;
+            bool isHelloMessage = random.Next(50) == 0;
 
             // Ensure bot stays within the screen boundaries (e.g., 0 to 800 for X and 0 to 600 for Y)
             if (isYDirection && newPosY >= 50 && newPosY <= 600)
