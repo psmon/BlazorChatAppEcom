@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Numerics;
 using System.Threading.Tasks;
 
@@ -217,24 +217,62 @@ namespace BlazorChatApp.Client.ChatLand
 
             await context.SaveAsync();
 
-            //�г���
-            await context.SetFontAsync("14px ����ü");            
+            //닉네임
+            await context.SetFontAsync("14px 바탕체");            
             await context.SetFillStyleAsync("Blue");
             await context.FillTextAsync(Name, 
                 _transform.Local.Position.X+10, _transform.Local.Position.Y + 75);
 
             if(!string.IsNullOrEmpty(ChatMessage))
             {
-                //ä�� Box
-                int dynamicWith = 50 + ((ChatMessage.Length -3)*15);
+                //채팅 Box
+                //int dynamicWith = 50 + ((ChatMessage.Length -3)*15);
+                int dynamicWidth = 50 + ((ChatMessage.Length - 3) * 15);
+                int dynamicHeight = 50;
 
-                await context.DrawImageAsync(resource["img-chatbox"], 
-                    _transform.Local.Position.X + 20, _transform.Local.Position.Y - 40, dynamicWith, 50);
+                //await context.DrawImageAsync(resource["img-chatbox"], _transform.Local.Position.X + 20, _transform.Local.Position.Y - 40, dynamicWith, 50);
 
-                //ä�� �޽�¡
-                await context.SetFillStyleAsync("Black");
-                await context.FillTextAsync(ChatMessage, 
-                    _transform.Local.Position.X + 23, _transform.Local.Position.Y-18);
+                // 캐릭터의 중심점 머리 위로 위치 조정
+                float boxX = _transform.Local.Position.X - dynamicWidth / 2 + 30;
+                float boxY = _transform.Local.Position.Y - 60; // 캐릭터 머리 위로 조정
+
+                float tailWidth = 10;
+                float tailHeight = 10;
+                int radius = 10;
+
+                // 말풍선 배경
+                await context.BeginPathAsync();
+                await context.MoveToAsync(boxX + radius, boxY);
+                await context.ArcToAsync(boxX + dynamicWidth, boxY, boxX + dynamicWidth, boxY + radius, radius);
+                await context.ArcToAsync(boxX + dynamicWidth, boxY + dynamicHeight, boxX + dynamicWidth - radius, boxY + dynamicHeight, radius);
+                await context.LineToAsync(boxX + dynamicWidth / 2 + tailWidth, boxY + dynamicHeight);
+                await context.LineToAsync(boxX + dynamicWidth / 2, boxY + dynamicHeight + tailHeight);
+                await context.LineToAsync(boxX + dynamicWidth / 2 - tailWidth, boxY + dynamicHeight);
+                await context.ArcToAsync(boxX, boxY + dynamicHeight, boxX, boxY + dynamicHeight - radius, radius);
+                await context.ArcToAsync(boxX, boxY, boxX + radius, boxY, radius);
+                await context.ClosePathAsync();
+
+                if(NameText.Contains("Bot"))
+                {
+                    await context.SetFillStyleAsync("#4CAF50");                    
+                }
+                else
+                {
+                    await context.SetFillStyleAsync("#03a9f4");
+                }
+
+                await context.FillAsync();
+
+                // 말풍선 테두리
+                await context.SetStrokeStyleAsync("White");
+                await context.StrokeAsync();
+
+
+                //채팅 메시징
+                await context.SetFontAsync("bold 14px 바탕체");
+                await context.SetFillStyleAsync("White");
+                await context.FillTextAsync(ChatMessage,
+                    boxX + 3, boxY + 20);
             }
 
             if(_isMine)
