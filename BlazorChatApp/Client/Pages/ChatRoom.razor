@@ -20,7 +20,7 @@
 <MultiSpritesheet @ref="_spritesheet" Source="assets/warrior.json,assets/santa1.json,assets/santa2.json,assets/elf1.json,assets/elf2.json" OnModelLoaded="@InitGame" />
 
 <div id="canvasContainer" style="width: 800px; height: 600px; position: absolute;">
-    <img @ref="_img_back" hidden id="spritesheet" src="/img/street25.png" />
+    <img @ref="_img_back" hidden id="spritesheet" src="/img/background.png" />
     <img @ref="_img_char1" hidden id="spritesheet" src="/img/char-1.png" />
     <img @ref="_img_chatbox" hidden id="spritesheet" src="/img/chatbox.png" />
     <BECanvas Width=800 Height=600 @ref="_canvas"></BECanvas>
@@ -218,7 +218,7 @@
         if (null == _chatLand)
             return;
 
-        _chatLand.Display.Size = new Size(800, 600);
+        _chatLand.Display.Size = new Size(800, 800);
     }
 
     [JSInvokable]

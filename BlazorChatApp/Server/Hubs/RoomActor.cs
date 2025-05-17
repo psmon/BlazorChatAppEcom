@@ -50,6 +50,7 @@ namespace BlazorChatApp.Server.Hubs
         private List<UserInfo> borUserInfos = new List<UserInfo>();
         private List<UpdateUserPos> botUpdateUserPosList = new List<UpdateUserPos>();
 
+        private DateTime _lastFeedTime = DateTime.MinValue;
 
 
         Random random = new Random();
@@ -210,7 +211,13 @@ namespace BlazorChatApp.Server.Hubs
 
             Receive<ChatGptFeedRequest>(cmd =>
             {
-                if(cmd.BotMessage.Contains("헤이데어"))
+                // 10초 이내면 피드백 무시
+                if ((DateTime.UtcNow - _lastFeedTime).TotalSeconds < 10)
+                    return;
+
+                _lastFeedTime = DateTime.UtcNow;
+
+                if (cmd.BotMessage.Contains("헤이데어"))
                     return;
 
                 // 최근 채팅 메시지 10개 추출, 문맥연결용
