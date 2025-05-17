@@ -7,12 +7,20 @@ using System.Threading.Tasks;
 
 using Akka.Actor;
 using Akka.Event;
+using Akka.Util;
 
+using BlazorChatApp.Client.Pages;
 using BlazorChatApp.Shared;
 
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.DependencyInjection;
+
+using OpenAI;
+using OpenAI.Chat;
+
+using MyChatMessage = BlazorChatApp.Shared.ChatMessage;
+using OpenAIChatMessage = OpenAI.Chat.ChatMessage;
 
 
 namespace BlazorChatApp.Server.Hubs
@@ -32,9 +40,11 @@ namespace BlazorChatApp.Server.Hubs
 
         private readonly IServiceScopeFactory scopeFactory;
 
-        private readonly ConcurrentQueue<ChatMessage> chatHistory = new ConcurrentQueue<ChatMessage>();
+        private readonly ConcurrentQueue<MyChatMessage> chatHistory = new ConcurrentQueue<MyChatMessage>();
         
         private const int MaxChatHistoryCount = 50;
+
+        private OpenAIClient openAIClient;
 
 
         private List<UserInfo> borUserInfos = new List<UserInfo>();
@@ -44,9 +54,37 @@ namespace BlazorChatApp.Server.Hubs
 
         Random random = new Random();
 
+        // ChatCompleted 사용 예시 메서드
+        private async Task<string> GetChatCompletionAsync(string userMessage)
+        {
+            var messages = new List<OpenAI.Chat.ChatMessage>
+            {
+                new SystemChatMessage("You are a helpful assistant."),                
+                new UserChatMessage(userMessage)
+            };
+
+
+            var response = await openAIClient.GetChatClient("gpt-3.5-turbo")
+                .CompleteChatAsync(messages);
+            
+            return response.ToString();
+
+        }
+        private List<MyChatMessage> GetLastChatMessages(int count)
+        {
+            return chatHistory.Reverse().Take(count).Reverse().ToList();
+        }
+
         public RoomActor(string _roomName, IServiceScopeFactory _scopeFactory)
         {
-            scopeFactory = _scopeFactory;            
+            // 환경변수에서 OpenAI API 키를 읽어옴
+            var openAIApiKey = Environment.GetEnvironmentVariable("OPENAI_API_KEY");
+            if (string.IsNullOrWhiteSpace(openAIApiKey))
+                throw new InvalidOperationException("OPENAI_API_KEY 환경변수가 설정되어 있지 않습니다.");
+
+            openAIClient = new OpenAIClient(openAIApiKey);
+
+            scopeFactory = _scopeFactory;
 
             roomName = _roomName;
 
@@ -65,7 +103,16 @@ namespace BlazorChatApp.Server.Hubs
                 Self
             );
 
-            for (int i = 0; i < 10; i++)
+            List<string> roles = new List<string>
+            {
+                "프론트",
+                "백엔드",
+                "기획자",
+                "보안담당",
+                "디자이너"
+            };
+
+            for (int i = 0; i < 5; i++)
             {
                 string RandomColorN = string.Format("#{0:X6}", random.Next(0xFFFFFF));
 
@@ -73,17 +120,19 @@ namespace BlazorChatApp.Server.Hubs
                 {
                     Id = $"bot-{i}",
                     Name = $"Bot-{i}",
-                    Color = RandomColorN
+                    Color = RandomColorN,
+                    Role = roles[i]
                 };
 
                 UpdateUserPos updateUserPos = new UpdateUserPos()
                 {
                     Id = userInfo.Id,
                     Name = userInfo.Name,
-                    PosX = random.Next(0, 800),
-                    PosY = random.Next(400, 550),
-                    AbsPosX = random.Next(0, 800),
-                    AbsPosY = random.Next(400, 550),
+                    PosX = random.Next(0, 600),
+                    PosY = random.Next(300, 450),
+                    AbsPosX = random.Next(0, 600),
+                    AbsPosY = random.Next(300, 450),
+                    Role = userInfo.Role,
                     ConnectionId = $"bot-connection-{i}"
                 };
 
@@ -108,18 +157,20 @@ namespace BlazorChatApp.Server.Hubs
                 { 
                     Id=cmd.UserInfo.Id,
                     Name=$"User-{userAutoNo}",
-                    Color=RandomColor
+                    Color=RandomColor,
+                    Role = "user"
                 };
 
                 // Default Position
                 double posx = random.Next(0,300);
-                double posy = random.Next(400, 550);
+                double posy = random.Next(300, 450);
 
                 UpdateUserPos updateUserPos= new UpdateUserPos()
                 { 
                     Id=cmd.UserInfo.Id,
                     Name=$"User-{userAutoNo}",
-                    PosX=posx,PosY=posy,
+                    Role = cmd.UserInfo.Role,
+                    PosX =posx,PosY=posy,
                     AbsPosX=posx,AbsPosY=posy,
                     ConnectionId = cmd.ConnectionId
                 };
@@ -144,7 +195,8 @@ namespace BlazorChatApp.Server.Hubs
                 { 
                     Id=cmd.UserInfo.Id,
                     Name=$"User-{userAutoNo}",
-                    Color=RandomColor
+                    Color=RandomColor,
+                    Role = cmd.UserInfo.Role
                 };
 
                 foreach (var botUserInfo in borUserInfos)
@@ -156,18 +208,83 @@ namespace BlazorChatApp.Server.Hubs
 
             });
 
-            Receive<ChatMessage>(async cmd => {           
+
+
+            Receive<ChatGptRequest> ( cmd =>
+            {
+                // 최근 채팅 메시지 3개 추출
+                var lastMessages = GetLastChatMessages(5);
+
+                // 최근 메시지 3개를 문자열로 변환
+                var historyText = string.Join("\n", lastMessages.Select(m => $"[{m.From?.Name ?? "User"}]: {m.Message}"));
+
+                // System 프롬프트 생성
+                var systemPrompt =
+                    $"아래는 최근 대화 내역입니다. 이 문맥이 필요하면 참고하세요.\n" +
+                    $"{historyText}\n" +
+                    "프론트,백엔드,기획자,인프라,디자이너 중 답변에 적합한 직군 선택. " +
+                    "적합하지 않으면 5개중 랜덤하게 선택, 나는 짧게응답하는 봇이라 50자미만으로 응답. " +
+                    "응답 text형태는 다음과같음\n\n[프론트] : 응답값\n\n";
+
+
+                var messages = new List<OpenAI.Chat.ChatMessage>
+                {
+                    new SystemChatMessage(systemPrompt),
+                    new UserChatMessage(cmd.UserMessage)
+                };
+
+                // 비동기 작업을 PipeTo(Self)로 전달
+                openAIClient.GetChatClient("gpt-4o")
+                    .CompleteChatAsync(messages)
+                    .ContinueWith(task =>
+                    {
+                        var response = task.Result;
+                        UpdateUserPos updateUserPos = botUpdateUserPosList[0];
+
+                        if (response.Value.Content[0].Text.Contains("프론트"))
+                            updateUserPos = botUpdateUserPosList[0];
+                        else if (response.Value.Content[0].Text.Contains("백엔드"))
+                            updateUserPos = botUpdateUserPosList[1];
+                        else if (response.Value.Content[0].Text.Contains("기획자"))
+                            updateUserPos = botUpdateUserPosList[2];
+                        else if (response.Value.Content[0].Text.Contains("인프라"))
+                            updateUserPos = botUpdateUserPosList[3];
+                        else if (response.Value.Content[0].Text.Contains("디자이너"))
+                            updateUserPos = botUpdateUserPosList[4];
+
+                        var chatMessage = new MyChatMessage()
+                        {
+                            From = new UserInfo { Id = updateUserPos.Id, Name = updateUserPos.Name, Color = updateUserPos.Color },
+                            Message = response.Value.Content[0].Text
+                        };
+                        return chatMessage;
+                    })
+                    .PipeTo(Self);
+
+            });
+
+
+
+            Receive<MyChatMessage>(async cmd => {           
                 //userAutoNo++;
                 string jsonString = JsonSerializer.Serialize(cmd);
                 log.Info("Received ChatMessage message: {0}", jsonString);
 
-                ChatMessage chatMessage = new ChatMessage()
+                MyChatMessage chatMessage = new MyChatMessage()
                 { 
                     From = cmd.From,
                     Message = cmd.Message
                 };
 
                 AddChatMessageToHistory(chatMessage);
+
+                if (!cmd.From.Id.Contains("bot"))
+                {
+                    this.Self.Tell(new ChatGptRequest() 
+                    { 
+                        UserMessage = cmd.Message
+                    });
+                }
 
                 await OnChatMessage(chatMessage);
 
@@ -194,6 +311,7 @@ namespace BlazorChatApp.Server.Hubs
                 {
                     Id = cmd.Id,
                     Name = cmd.Name,
+                    Role = cmd.Role,
                     PosX = cmd.PosX,
                     PosY = cmd.PosY,
                     AbsPosX = AbsPosX,
@@ -358,7 +476,7 @@ namespace BlazorChatApp.Server.Hubs
 
             if (isHelloMessage)
             {
-                ChatMessage chatMessage = new ChatMessage()
+                MyChatMessage chatMessage = new MyChatMessage()
                 {
                     From = new UserInfo { Id = botUpdateUserPos.Id, Name = botUpdateUserPos.Name, Color = botUpdateUserPos.Color },
                     Message = randomGreeting
@@ -366,11 +484,11 @@ namespace BlazorChatApp.Server.Hubs
 
                 //AddChatMessageToHistory(chatMessage);
 
-                Self.Tell(chatMessage);
+                //Self.Tell(chatMessage);
             }
         }
 
-        private void AddChatMessageToHistory(ChatMessage chatMessage)
+        private void AddChatMessageToHistory(MyChatMessage chatMessage)
         {
             chatHistory.Enqueue(chatMessage);
             while (chatHistory.Count > MaxChatHistoryCount)
@@ -420,7 +538,7 @@ namespace BlazorChatApp.Server.Hubs
             }            
         }
 
-        public async Task OnChatMessage(ChatMessage chatMessage)
+        public async Task OnChatMessage(MyChatMessage chatMessage)
         {
             using(var scope = scopeFactory.CreateScope())
             {

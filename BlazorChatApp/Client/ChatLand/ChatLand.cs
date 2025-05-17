@@ -61,7 +61,7 @@ namespace BlazorChatApp.Client.ChatLand
         }
 
 
-        public void AddUser(string id, string name, double posx,double posy, bool isMe, Dictionary<string,ElementReference> resource)
+        public void AddUser(string id, string name, string role, double posx,double posy, bool isMe, Dictionary<string,ElementReference> resource)
         {
             if (_isInitUser.ContainsKey(id))
             {
@@ -116,7 +116,32 @@ namespace BlazorChatApp.Client.ChatLand
 
             InitAnimationController(avartarName, animationCollection, warrior);
 
-            var character = new Character(animationCollection, warrior ,isMe , id, name);
+
+            string myRole = "user";
+
+            if (id == "bot-0")
+            {
+                myRole = "프론트";
+            }
+            else if (id == "bot-1")
+            {
+                myRole = "백엔드";
+            }
+            else if (id == "bot-2")
+            {
+                myRole = "기획자";
+            }
+            else if (id == "bot-3")
+            {
+                myRole = "인프라";
+            }
+            else if (id == "bot-4")
+            {
+                myRole = "디자이너";
+            }
+
+
+            var character = new Character(animationCollection, warrior ,isMe , id, name, myRole);
 
             character.resource = resource;
 

@@ -5,8 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.5.27.1" />
+    <PackageReference Include="Akka" Version="1.5.27.1" />    
     <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="8.0.11" />
+    <PackageReference Include="OpenAI" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup>

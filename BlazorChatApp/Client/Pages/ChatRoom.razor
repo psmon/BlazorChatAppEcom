@@ -131,7 +131,7 @@
         hubConnection.On<RoomInfo, UserInfo, UpdateUserPos>("OnJoinRoom", (room, user, pos) =>
         {
             Console.WriteLine($"WS - OnJoinRoom");
-            _chatLand.AddUser(user.Id, user.Name, pos.AbsPosX, pos.AbsPosY, false, resource);
+            _chatLand.AddUser(user.Id, user.Name, user.Role ,pos.AbsPosX, pos.AbsPosY, false, resource);
 
         });
 
@@ -142,7 +142,7 @@
             {
                 bool isMine = pos.Id == LoginId ? true : false;
 
-                _chatLand.AddUser(pos.Id, pos.Name, pos.AbsPosX, pos.AbsPosY, isMine, resource);
+                _chatLand.AddUser(pos.Id, pos.Name, user.Role, pos.AbsPosX, pos.AbsPosY, isMine, resource);
             }
         });
 
@@ -176,18 +176,18 @@
 
 
         JoinRoom sendMsg = new JoinRoom()
-            {
-                UserInfo = new UserInfo() { Name = "user", Id = LoginId },
-                RoomInfo = new RoomInfo() { Name = "room1" }
-            };
+        {
+            UserInfo = new UserInfo() { Name = "user", Id = LoginId },
+            RoomInfo = new RoomInfo() { Name = "room1" }
+        };
 
         await hubConnection.SendAsync("JoInRoom", sendMsg);
 
         SyncRoom syndMsg = new SyncRoom()
-            {
-                UserInfo = new UserInfo() { Name = "user", Id = LoginId },
-                RoomInfo = new RoomInfo() { Name = "room1" }
-            };
+        {
+            UserInfo = new UserInfo() { Name = "user", Id = LoginId },
+            RoomInfo = new RoomInfo() { Name = "room1" }
+        };
 
         await hubConnection.SendAsync("SyncRoom", syndMsg);
         

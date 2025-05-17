@@ -11,6 +11,8 @@
  
         public string Color { get; set; }
 
+        public string Role { get; set; }
+
       
     }
 
@@ -75,6 +77,11 @@
     {        
         public UserInfo UserInfo{ get; set; }
         public object Data{get;set; }
+    }
+
+    public class ChatGptRequest
+    {
+        public string UserMessage { get; set; }
     }
 
 }

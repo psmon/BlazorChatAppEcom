@@ -18,6 +18,8 @@ namespace BlazorChatApp.Client.ChatLand
     {
         private readonly TransformComponent _transform;
         public string Name{ get;set; }
+
+        public string Role { get; set; }
         public string ChatMessage{ get;set; }
 
         public Dictionary<string,ElementReference> resource {get;set; }
@@ -39,9 +41,11 @@ namespace BlazorChatApp.Client.ChatLand
 
         private bool _isMine;
 
-        public Character(AnimationCollection animationCollection, SceneObject owner, bool isMine, string id, string name) : base(owner)
+        public Character(AnimationCollection animationCollection, SceneObject owner, bool isMine, string id, string name, string role) : base(owner)
         {
             Name = name;
+
+            Role = role;
 
             _isMine = isMine;
 
@@ -223,7 +227,13 @@ namespace BlazorChatApp.Client.ChatLand
             await context.FillTextAsync(Name, 
                 _transform.Local.Position.X+10, _transform.Local.Position.Y + 75);
 
-            if(!string.IsNullOrEmpty(ChatMessage))
+            //Role
+            await context.SetFontAsync("14px 바탕체");
+            await context.SetFillStyleAsync("White");
+            await context.FillTextAsync(Role,
+                _transform.Local.Position.X + 10, _transform.Local.Position.Y + 90);
+
+            if (!string.IsNullOrEmpty(ChatMessage))
             {
                 //채팅 Box
                 //int dynamicWith = 50 + ((ChatMessage.Length -3)*15);

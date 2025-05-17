@@ -117,7 +117,7 @@ namespace BlazorChatApp.Client.ChatLand
             await context.SetFillStyleAsync("#FFFFFF");
 
 
-            await context.FillTextAsync("Happy New Year 2025", 10, 30);
+            await context.FillTextAsync("BlumnAI", 10, 30);
             await context.SetFontAsync("16px consolas");
             await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
             await context.SetStrokeStyleAsync("#FFFFFF");
