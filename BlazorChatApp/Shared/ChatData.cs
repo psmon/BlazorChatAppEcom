@@ -38,6 +38,8 @@
     { 
         public UserInfo From { get; set; }
         public string Message { get; set; }
+
+        public bool IsVisible { get; set; } = true;
     }
 
     public class JoinRoom
@@ -82,6 +84,11 @@
     public class ChatGptRequest
     {
         public string UserMessage { get; set; }
+    }
+
+    public class ChatGptFeedRequest
+    {
+        public string BotMessage { get; set; }
     }
 
 }
