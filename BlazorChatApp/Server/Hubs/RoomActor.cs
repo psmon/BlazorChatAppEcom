@@ -52,6 +52,9 @@ namespace BlazorChatApp.Server.Hubs
 
         private DateTime _lastFeedTime = DateTime.MinValue;
 
+        private readonly Queue<DateTime> _feedTimestamps = new Queue<DateTime>();
+        private const int FeedWindowSeconds = 10;
+        private const int FeedMaxCount = 3;
 
         Random random = new Random();
 
@@ -211,11 +214,16 @@ namespace BlazorChatApp.Server.Hubs
 
             Receive<ChatGptFeedRequest>(cmd =>
             {
-                // 10초 이내면 피드백 무시
-                if ((DateTime.UtcNow - _lastFeedTime).TotalSeconds < 10)
-                    return;
+                var now = DateTime.UtcNow;
 
-                _lastFeedTime = DateTime.UtcNow;
+                // 10초 이내 타임스탬프만 남기고 큐 정리
+                while (_feedTimestamps.Count > 0 && (now - _feedTimestamps.Peek()).TotalSeconds > FeedWindowSeconds)
+                    _feedTimestamps.Dequeue();
+
+                if (_feedTimestamps.Count >= FeedMaxCount)
+                    return; // 10초 이내 3회 초과 시 무시
+
+                _feedTimestamps.Enqueue(now);
 
                 if (cmd.BotMessage.Contains("헤이데어"))
                     return;
