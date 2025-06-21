@@ -138,7 +138,7 @@ namespace BlazorChatApp.Client.ChatLand
             await context.SetFillStyleAsync("#FFFFFF");
 
 
-            await context.FillTextAsync("BlumnAI-헤이데어팀", 10, 30);
+            await context.FillTextAsync("BlumnAI-헤이데어팀의 AI Retrospective(회고)", 10, 30);
             await context.SetFontAsync("16px consolas");
             await context.FillTextAsync($"FPS: {fps:0.000}", 10, 50);
             await context.SetStrokeStyleAsync("#FFFFFF");

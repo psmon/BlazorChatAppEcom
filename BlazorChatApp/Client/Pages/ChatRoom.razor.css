@@ -1,0 +1,53 @@
+﻿/* 모바일 가로 전체모드 및 ChatRoom 전용 스타일 */
+@media (max-width: 900px) {
+    html, body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+    }
+
+    #canvasContainer,
+    #canvasContainerEx {
+        width: 100vw !important;
+        height: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 100vw !important;
+        left: 0;
+        top: 0;
+        position: relative;
+    }
+
+    .becanvas, canvas, .becanvas canvas {
+        width: 100vw !important;
+        height: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 100vw !important;
+        display: block;
+    }
+
+    div[style*="width: 800px"], div[style*="height: 600px"] {
+        width: 100vw !important;
+        height: 100vw !important;
+        max-width: 100vw !important;
+        max-height: 100vw !important;
+    }
+
+    table {
+        width: 100vw !important;
+        table-layout: fixed;
+        display: block;
+        overflow-x: auto;
+    }
+
+    th, td {
+        width: auto !important;
+        max-width: 100vw !important;
+    }
+
+    #scrollbox {
+        width: 100vw !important;
+        max-width: 100vw !important;
+    }
+}

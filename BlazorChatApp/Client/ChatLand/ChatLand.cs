@@ -77,28 +77,39 @@ namespace BlazorChatApp.Client.ChatLand
 
             string avartarName = "";
 
-            int roundIdx = userIdx % 5;
+            int roundIdx = userIdx % 6;
 
-            if(roundIdx==0)
-            {
-                avartarName = "santa2";
-            }
-            else if(roundIdx==1)
-            {
-                avartarName = "elf2";
-            }
-            else if(roundIdx==2)
+
+            if (roundIdx == 0)
             {
                 avartarName = "elf1";
             }
-            else if(roundIdx==3)
+            else if (roundIdx == 1)
             {
                 avartarName = "elf2";
             }
-            else
+            else if (roundIdx == 2)
+            {
+                avartarName = "elf3";
+            }
+            else if (roundIdx == 3)
+            {
+                avartarName = "elf4";
+            }
+            else if (roundIdx == 4)
             {
                 avartarName = "santa2";
             }
+            else if (roundIdx == 4)
+            {
+                avartarName = "santa1";
+            }
+            else
+            {
+                avartarName = "warrior";
+            }
+
+
 
             animationCollection = _animationCollection[avartarName];
 
